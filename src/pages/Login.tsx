@@ -16,6 +16,7 @@ import { useState } from "react";
 import { useSetAtom } from "jotai";
 import { accessTokenAtom,refreshTokenAtom} from "@/store/tokenStore";
 import { useNavigate } from "react-router-dom"; 
+import Cookies from "js-cookie";
 
 const formSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }),
@@ -50,8 +51,12 @@ export default function Login() {
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
       console.log("Login successful:", response.data);
-
       console.log("Access Token:", accessToken);
+
+      // Save token in cookies
+      Cookies.set("accessToken", accessToken, { expires: 1 }); // Expires in 1 day
+      Cookies.set("refreshToken", refreshToken, { expires: 7 }); // Expires in 7 days
+  
       navigate("/home");
     } catch (error) {
       console.error("Login failed:", error);
