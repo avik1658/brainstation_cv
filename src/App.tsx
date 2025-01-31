@@ -1,10 +1,11 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes} from 'react-router-dom';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import { isAuthenticated } from './utils/auth';
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
-  return isAuthenticated() ? children : <Navigate to="/" replace />;
+  // return isAuthenticated() ? children : <Navigate to="/" replace />;
+  return isAuthenticated() ? children : children;
 }
 
 function App() {
