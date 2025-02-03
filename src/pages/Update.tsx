@@ -1,7 +1,12 @@
+import Navbar from "@/components/Navbar";
+import SkillUpdate from "@/components/updatepage/SkillUpdate";
+
+
 export default function Update() {  
     return ( 
         <>
-            <h1>This is the update page</h1>
+            <Navbar/>
+            <SkillUpdate/>
         </>      
     );
 }
