@@ -16,6 +16,9 @@ export default function Project() {
                             <span className="font-bold text-gray-800">Responsibilities : </span> {element.responsibilities}
                         </p>
                         <p className="text-gray-600 font-medium">
+                            <span className="font-bold text-gray-800">Github Link : </span> {element.link}
+                        </p>
+                        <p className="text-gray-600 font-medium">
                             <span className="font-bold text-gray-800">Duration : </span> {element.duration}
                         </p>
                         <p className="text-gray-700 mt-3 leading-relaxed">{element.decription}</p>

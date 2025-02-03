@@ -31,6 +31,7 @@ const projects = [
         name: 'Project 1',
         tech: 'Python, Django, React',
         responsibilities: 'Developed the backend using Django and frontend using React',
+        link:'https://github.com/',
         duration: '2012 Jan - 2013 Dec',
         decription: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development.'
     },
@@ -38,6 +39,7 @@ const projects = [
         name: 'Project 2',
         tech: 'Python, Django, React',
         responsibilities: 'Developed the backend using Django and frontend using React',
+        link:'https://github.com/',
         duration: '2012 Jan - 2013 Dec',
         decription: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development. '
     },
@@ -45,6 +47,7 @@ const projects = [
         name: 'Project 3',
         tech: 'Python, Django, React',
         responsibilities: 'Developed the backend using Django and frontend using React',
+        link:'https://github.com/',
         duration: '2012 Jan - 2013 Dec',
         decription: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development.'
     },
@@ -52,6 +55,7 @@ const projects = [
         name: 'Project 4',
         tech: 'Python, Django, React',
         responsibilities: 'Developed the backend using Django and frontend using React',
+        link:'https://github.com/',
         duration: '2012 Jan - 2013 Dec',
         decription: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development.'
     }
