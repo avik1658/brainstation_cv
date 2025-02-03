@@ -1,4 +1,5 @@
 import Biography from "@/components/homepage/Biography";
+import ExperienceAndEducation from "@/components/homepage/ExperienceAndEducation";
 import Project from "@/components/homepage/Project";
 import Skill from "@/components/homepage/Skill";
 import TraingAndAchievement from "@/components/homepage/TraingAndAchievement";
@@ -10,6 +11,7 @@ export default function Home() {
             <Navbar />
             <Biography/>
             <Skill/>
+            <ExperienceAndEducation/>
             <TraingAndAchievement/>
             <Project/>
         </>      

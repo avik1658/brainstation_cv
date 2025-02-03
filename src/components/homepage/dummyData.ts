@@ -57,4 +57,48 @@ const projects = [
     }
 ]
 
-export { profileInfo, skill,training,acheivements,projects };
+
+const experience = [
+    {
+        designation: 'Software Engineer',
+        company: 'Brain Station 23 Ltd',
+        from: '2020',
+        to: '2021'
+    },
+    {
+        designation: 'Software Engineer',
+        company: 'Brain Station 23 Ltd',
+        from: '2020',
+        to: '2021'
+    },
+    {
+        designation: 'Software Engineer',
+        company: 'Brain Station 23 Ltd',
+        from: '2020',
+        to: '2021'
+    }
+]
+
+const education = [
+    {
+        degree: 'B.Tech',
+        department: 'Computer Science',
+        passingYear: '2020',
+        university_Institute: 'Green University of Bangladesh'
+    },
+    {
+        degree: 'M.Tech',
+        department: 'Information Technology',
+        passingYear: '2022',
+        university_Institute: 'Green University of Bangladesh'
+    },
+    {
+        degree: 'M.Tech',
+        department: 'Information Technology',
+        passingYear: '2022',
+        university_Institute: 'Green University of Bangladesh'
+    },
+];
+
+
+export { profileInfo, skill,training,acheivements,projects,experience,education};
