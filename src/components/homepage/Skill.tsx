@@ -85,7 +85,7 @@ export default function Skill() {
 
                         <div className="w-full bg-gray-300 h-4 rounded-full mt-2">
                             <div 
-                                className="bg-black h-4 rounded-full transition-all duration-500" 
+                                className="bg-sky-600 h-4 rounded-full transition-all duration-500" 
                                 style={{ width: `${element.rating * 10}%` }}
                             ></div>
                         </div>

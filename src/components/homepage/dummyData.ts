@@ -2,7 +2,7 @@ const profileInfo = {
     fullname: 'Alex Smith',
     position: 'Trainee',
     sbu: 'Bench',
-    interestedIn: ['Machine Learning', 'Frontend Development'],
+    interestedIn: ['Machine Learning', 'Frontend Development','AI'],
     biography: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development.'
 };
 

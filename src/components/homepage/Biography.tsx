@@ -10,11 +10,9 @@ export default function Biography() {
                 <h2 className="text-2xl text-gray-700">{profileInfo.position}</h2>
                 <h3 className="text-xl text-gray-600">SBU: {profileInfo.sbu}</h3>
 
-                <div className="mt-6 flex flex-col flex-wrap gap-3">
+                <div className="mt-6 flex flex-row flex-wrap gap-2 items-center justify-center">
                     {profileInfo.interestedIn.map((element, index) => (
-                        <span key={index} className="bg-black text-center text-white text-lg font-semibold px-4 py-2 rounded-full shadow-md">
-                            {element}
-                        </span>
+                        <p key={index} className="bg-sky-600 rounded-lg text-white px-2 items-center" >{element}</p>
                     ))}
                 </div>
             </div>

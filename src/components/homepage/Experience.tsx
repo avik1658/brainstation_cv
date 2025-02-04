@@ -51,7 +51,7 @@ export default function Experience() {
     return (
         <div className="bg-gray-100 rounded-2xl w-full max-w-4xl mx-auto p-6">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-800 flex-1 text-center">Technical Skills</h1>
+                <h1 className="text-3xl font-bold text-gray-800 flex-1 text-center">Experience</h1>
                 <Dialog>
                     <DialogTrigger asChild>
                         <button onClick={() => setModalType("add")}><FaCirclePlus className="text-2xl hover:text-sky-600"/></button>
