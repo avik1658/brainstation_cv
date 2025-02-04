@@ -33,7 +33,7 @@ const projects = [
         responsibilities: 'Developed the backend using Django and frontend using React',
         link:'https://github.com/',
         duration: '2012 Jan - 2013 Dec',
-        decription: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development.'
+        description: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development.'
     },
     {
         name: 'Project 2',
@@ -41,7 +41,7 @@ const projects = [
         responsibilities: 'Developed the backend using Django and frontend using React',
         link:'https://github.com/',
         duration: '2012 Jan - 2013 Dec',
-        decription: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development. '
+        description: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development. '
     },
     {
         name: 'Project 3',
@@ -49,7 +49,7 @@ const projects = [
         responsibilities: 'Developed the backend using Django and frontend using React',
         link:'https://github.com/',
         duration: '2012 Jan - 2013 Dec',
-        decription: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development.'
+        description: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development.'
     },
     {
         name: 'Project 4',
@@ -57,7 +57,7 @@ const projects = [
         responsibilities: 'Developed the backend using Django and frontend using React',
         link:'https://github.com/',
         duration: '2012 Jan - 2013 Dec',
-        decription: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development.'
+        description: 'This is my Biography. A passionate learner and tech enthusiast exploring Machine Learning and Frontend Development.'
     }
 ]
 

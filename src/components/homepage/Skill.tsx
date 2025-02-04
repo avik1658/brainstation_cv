@@ -1,15 +1,16 @@
 import { skill } from "./dummyData";
 import { FaEdit } from "react-icons/fa";
+import { FaCirclePlus } from "react-icons/fa6";
 import { MdDelete } from "react-icons/md";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -19,20 +20,20 @@ function SkillModal({ modalType }: { modalType: string }) {
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>{modalType === "add" ? "Add Skill" : "Edit Skill"}</DialogTitle>
-                <DialogDescription>
-                    <div className="mt-2 flex flex-col gap-y-4">
-                        <div>
-                            <Label>Skill</Label>
-                            <Input />
-                        </div>
-                        <div>
-                            <Label>Rating</Label>
-                            <Input />
-                        </div>
-                    </div>
-
-                </DialogDescription>
             </DialogHeader>
+            <div className="mt-2 flex flex-col gap-y-4">
+                <div>
+                    <Label>Skill</Label>
+                    <Input />
+                </div>
+                <div>
+                    <Label>Rating</Label>
+                    <Input />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button type="submit">{modalType === "add" ? "Add Skill" : "Save Changes"}</Button>
+            </DialogFooter>
         </DialogContent>
     );
 }
@@ -46,7 +47,7 @@ export default function Skill() {
                 <h1 className="text-3xl font-bold text-gray-800 flex-1 text-center">Technical Skills</h1>
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button onClick={() => setModalType("add")}>Add Skill</Button>
+                        <button onClick={() => setModalType("add")}><FaCirclePlus className="text-2xl hover:text-sky-600"/></button>
                     </DialogTrigger>
                     <SkillModal modalType={modalType} />
                 </Dialog>
@@ -62,7 +63,7 @@ export default function Skill() {
                         <div className="flex justify-between content-center">
                             <p className="text-lg font-normal">{element.skillName}</p>
 
-                            <div className="flex flex-row gap-2">
+                            <div className="flex flex-row gap-2 items-center">
                                 <p className="text-lg font-normal">{element.rating}/10</p>
 
                                 <Dialog>
