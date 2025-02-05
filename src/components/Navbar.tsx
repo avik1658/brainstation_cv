@@ -90,7 +90,7 @@ function NavModal() {
 
 export default function Navbar() {
     return (
-        <nav className="bg-indigo-950 text-white px-6 py-4 shadow-md flex justify-between items-center">
+        <nav className="bg-indigo-950 text-white px-6 py-4 shadow-md flex flex-col md:flex-row justify-between items-center">
             <div className="flex gap-4 items-center">
                 <img src="/brain.png" alt="brainstation" className="w-12 h-12 rounded-full" />
                 <p className="text-3xl font-bold text-sky-600">BrainStation23</p>

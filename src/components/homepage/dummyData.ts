@@ -104,5 +104,104 @@ const education = [
     },
 ];
 
+const employees = [
+    {
+        key: '1',
+        employeeId: '001',
+        name: 'John Doe',
+        designation: 'Software Engineer',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'Completed',
+    },
+    {
+        key: '2',
+        employeeId: '002',
+        name: 'Alex Smith',
+        designation: 'Software Engineer',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'In Progress',
+    },
+    {
+        key: '3',
+        employeeId: '003',
+        name: 'Lionel Messi',
+        designation: 'Team Lead',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'Completed',
+    },
+    {
+        key: '4',
+        employeeId: '004',
+        name: 'Gareth Bale',
+        designation: 'Software Engineer',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'Completed',
+    },
+    {
+        key: '5',
+        employeeId: '005',
+        name: 'Neymar Js',
+        designation: 'Sales',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'In Progress',
+    },
+    {
+        key: '6',
+        employeeId: '006',
+        name: 'John Doe',
+        designation: 'Software Engineer',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'In Progress',
+        },
+    {
+        key: '7',
+        employeeId: '007',
+        name: 'Alex Smith',
+        designation: 'Software Engineer',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'Completed',
+    },
+    {
+        key: '8',
+        employeeId: '008',
+        name: 'Lionel Messi',
+        designation: 'Team Lead',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'Completed',
+    },
+    {
+        key: '9',
+        employeeId: '009',
+        name: 'Gareth Bale',
+        designation: 'Software Engineer',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'Completed',
+    },
+    {
+        key: '10',
+        employeeId: '010',
+        name: 'Neymar Js',
+        designation: 'Sales',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'In Progress',
+    },
+    {
+        key: '11',
+        employeeId: '011',
+        name: 'Neymar Js',
+        designation: 'Sales',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'In Progress',
+    },
+    {
+        key: '12',
+        employeeId: '012',
+        name: 'Neymar Js',
+        designation: 'Senior',
+        enthusiastAt: 'React,typscript,node,php',
+        updateStatus: 'In Progress',
+    },
+];
 
-export { profileInfo, skill,training,acheivements,projects,experience,education};
+
+export { profileInfo, skill,training,acheivements,projects,experience,education,employees};
