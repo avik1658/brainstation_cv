@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogDescription,
   DialogTitle,
   DialogTrigger,
   DialogFooter
@@ -20,6 +21,7 @@ function AcheivementModal({ modalType }: { modalType: string }) {
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>{modalType === "add" ? "Add Acheivement" : "Edit Acheivement"}</DialogTitle>
+                <DialogDescription/>
             </DialogHeader>
             <div className="mt-2 flex flex-col gap-y-4">
                 <div>

@@ -73,7 +73,7 @@ export default function Education() {
                                             className="text-blue-500 hover:text-blue-700"
                                             onClick={() => setModalType("edit")}
                                         >
-                                            <FaEdit size={20} />
+                                            <FaEdit className="text-sky-600" size={20} />
                                         </button>
                                     </DialogTrigger>
                                     <EducationModal modalType={modalType} />
