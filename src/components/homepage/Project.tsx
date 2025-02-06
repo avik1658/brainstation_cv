@@ -7,6 +7,7 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -22,6 +23,7 @@ function ProjectModal({ modalType }: { modalType: string }) {
         <DialogContent className="max-w-4xl w-full">
             <DialogHeader>
                 <DialogTitle>{modalType === "add" ? "Add Project" : "Edit Project"}</DialogTitle>
+                <DialogDescription/>
             </DialogHeader>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="mt-2 flex flex-col gap-y-4">

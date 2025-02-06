@@ -7,6 +7,7 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -20,6 +21,7 @@ function ExperienceModal({ modalType }: { modalType: string }) {
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>{modalType === "add" ? "Add Experience" : "Edit Experience"}</DialogTitle>
+                <DialogDescription/>
             </DialogHeader>
             <div className="mt-2 flex flex-col gap-y-4">
                 <div>

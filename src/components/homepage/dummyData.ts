@@ -23,7 +23,8 @@ const training = ['Python','Django','FastAPI','Vue.js','Reactjs'];
 
 const acheivements = ['Solved over 1000+ problems on various problem solving platforms',
     'Participated in various hackathons and secured top 10 positions',
-    'Participated in various coding competitions and secured top 10 positions'];
+    'Participated in various sports competitions and secured top 10 positions',
+    'Participated in various coding competitions and secured top 12 positions'];
 
 
 const projects = [

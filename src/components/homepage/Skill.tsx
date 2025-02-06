@@ -7,6 +7,7 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -20,6 +21,7 @@ function SkillModal({ modalType }: { modalType: string }) {
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>{modalType === "add" ? "Add Skill" : "Edit Skill"}</DialogTitle>
+                <DialogDescription/>
             </DialogHeader>
             <div className="mt-2 flex flex-col gap-y-4">
                 <div>
@@ -28,7 +30,7 @@ function SkillModal({ modalType }: { modalType: string }) {
                 </div>
                 <div>
                     <Label>Rating</Label>
-                    <Input />
+                    <Input type="number" min={1} max={10} />
                 </div>
             </div>
             <DialogFooter>

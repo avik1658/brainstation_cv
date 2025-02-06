@@ -38,7 +38,7 @@ export default function Login() {
   const onSubmit = async (data: FormData) => {
     setError(null); 
     try {
-      const response = await axiosInstance.post("/api/v1/token/", data);
+      const response = await axiosInstance.post("/api/token/", data);
       const accessToken = response.data.access;
       const refreshToken = response.data.refresh;
       
