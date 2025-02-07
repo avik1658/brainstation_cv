@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { logoutUser } from "@/utils/auth";
 
 interface DropdownProps<T extends string | number> {
     label: string;
@@ -128,7 +129,7 @@ export default function Navbar() {
                     <DropdownMenuContent className="bg-white shadow-lg rounded-lg mt-2 w-48 text-gray-800">
                         <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">My Profile</DropdownMenuItem>
                         <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">Profile Update</DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">Logout</DropdownMenuItem>
+                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => logoutUser()}>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

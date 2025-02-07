@@ -33,6 +33,7 @@ export const updateToken = async () => {
 
 // Function to get the access token from localStorage
 export const getAccessToken = () => {
+  console.log(localStorage.getItem("localAccessToken"))
   return localStorage.getItem("localAccessToken");
 };
 
