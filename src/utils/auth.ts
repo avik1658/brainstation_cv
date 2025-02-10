@@ -3,13 +3,14 @@ import axiosInstance from "@/axios";
 export const updateToken = async () => {
   try {
     const refreshToken = localStorage.getItem("localRefreshToken");
-
+    console.log(`update token function`)
+    console.log("Refresh Token:", refreshToken);
     if (!refreshToken) {
       console.error("No refresh token found");
       throw new Error("No refresh token available");
     }
 
-    const response = await axiosInstance.post("/api/v1/token/refresh/", {
+    const response = await axiosInstance.post("/api/token/refresh/", {
       refresh: refreshToken,
     });
 
@@ -31,17 +32,19 @@ export const updateToken = async () => {
   }
 };
 
-// Function to get the access token from localStorage
 export const getAccessToken = () => {
-  console.log(localStorage.getItem("localAccessToken"))
-  return localStorage.getItem("localAccessToken");
+  console.log(`access token function`)
+  return localStorage.getItem("localAccessToken"); 
 };
 
-// Function to log out the user by clearing stored tokens and redirecting
 export const logoutUser = () => {
+  console.log("Log out user function")
   localStorage.removeItem("localAccessToken");
   localStorage.removeItem("localRefreshToken");
-  window.location.href = "/";  // Redirect to home or login page
+
+  setTimeout(() => {
+    window.location.href = "/"; // Redirect after delay
+  }, 500);
 };
 
 // Function to check if the user is authenticated

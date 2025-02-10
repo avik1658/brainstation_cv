@@ -15,7 +15,6 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import axiosInstance from "@/axios";
-import { getAccessToken } from "@/utils/auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -104,9 +103,7 @@ export default function Experience() {
 
   const fetchExperiences = async () => {
     try {
-      const response = await axiosInstance.get<Experience[]>("/api/v1/experiences/", {
-        headers: { Authorization: `Bearer ${getAccessToken()}` },
-      });
+      const response = await axiosInstance.get<Experience[]>("/api/v1/experiences/");
       setExperiences(response.data);
     } catch (error) {
       console.error("Error fetching experiences:", error);
@@ -119,9 +116,7 @@ export default function Experience() {
 
   const postExperience = async (data: ExperienceFormData) => {
     try {
-      await axiosInstance.post("/api/v1/experiences/", data, {
-        headers: { Authorization: `Bearer ${getAccessToken()}` },
-      });
+      await axiosInstance.post("/api/v1/experiences/", data);
       fetchExperiences();
     } catch (error) {
       console.error("Error posting experience:", error);
@@ -130,9 +125,7 @@ export default function Experience() {
 
   const deleteExperience = async (id: number) => {
     try {
-      await axiosInstance.delete(`/api/v1/experiences/${id}/`, {
-        headers: { Authorization: `Bearer ${getAccessToken()}` },
-      });
+      await axiosInstance.delete(`/api/v1/experiences/${id}/`);
       fetchExperiences();
     } catch (error) {
       console.error("Error deleting experience:", error);

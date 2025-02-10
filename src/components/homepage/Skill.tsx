@@ -15,24 +15,24 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import axiosInstance from "@/axios";
-import { getAccessToken } from "@/utils/auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 interface SkillFormData {
-    skill: string;
-    level: number;
-    priority: number;
+  skill: string;
+  level: number;
+  priority: number;
 }
 
-interface Skill extends SkillFormData{
-    id: number;
+interface Skill extends SkillFormData {
+  id: number;
 }
 
 interface SkillModalProps {
   modalType: string;
-  postSkill: (data: SkillFormData) => void;
+  skillData?: Skill | null;
+  handleSkill: (data: SkillFormData, id?: number) => void;
   closeModal: () => void;
 }
 
@@ -42,7 +42,7 @@ const formSchema = z.object({
   priority: z.number().min(1, "Minimum priority is 1").max(10, "Maximum priority is 10"),
 });
 
-function SkillModal({ modalType, postSkill, closeModal }: SkillModalProps) {
+function SkillModal({ modalType, skillData, handleSkill, closeModal }: SkillModalProps) {
   const {
     register,
     handleSubmit,
@@ -50,15 +50,18 @@ function SkillModal({ modalType, postSkill, closeModal }: SkillModalProps) {
     formState: { errors },
   } = useForm<SkillFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: { skill: "", level: 1, priority: 1 },
+    defaultValues: skillData || { skill: "", level: 1, priority: 1 },
   });
 
+  useEffect(() => {
+    reset(skillData || { skill: "", level: 1, priority: 1 });
+  }, [skillData, reset]);
+
   const onSubmit = (data: SkillFormData) => {
-    postSkill(data);
+    handleSkill(data, skillData?.id);
     reset();
     closeModal();
   };
-
 
   return (
     <DialogContent>
@@ -83,7 +86,9 @@ function SkillModal({ modalType, postSkill, closeModal }: SkillModalProps) {
           {errors.priority && <p className="text-red-500">{errors.priority.message}</p>}
         </div>
         <DialogFooter>
-          <Button type="submit" className="focus:border-2 border-bg-white">{modalType === "add" ? "Add Skill" : "Save Changes"}</Button>
+          <Button type="submit" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
+            {modalType === "add" ? "Add Skill" : "Save Changes"}
+          </Button>
         </DialogFooter>
       </form>
     </DialogContent>
@@ -93,13 +98,12 @@ function SkillModal({ modalType, postSkill, closeModal }: SkillModalProps) {
 export default function Skill() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [modalType, setModalType] = useState<string>("");
+  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchSkills = async () => {
     try {
-      const response = await axiosInstance.get<Skill[]>("/api/v1/technical-skills/", {
-        headers: { Authorization: `Bearer ${getAccessToken()}` },
-      });
+      const response = await axiosInstance.get<Skill[]>("/api/v1/technical-skills/");
       setSkills(response.data);
     } catch (error) {
       console.error("Error fetching skills:", error);
@@ -110,24 +114,22 @@ export default function Skill() {
     fetchSkills();
   }, []);
 
-  const postSkill = async (data : SkillFormData) => {
+  const handleSkill = async (data: SkillFormData, id?: number) => {
     try {
-      await axiosInstance.post(
-        "/api/v1/technical-skills/",
-        data,
-        { headers: { Authorization: `Bearer ${getAccessToken()}` } }
-      );
+      if (id) {
+        await axiosInstance.put(`/api/v1/technical-skills/${id}/`, data);
+      } else {
+        await axiosInstance.post("/api/v1/technical-skills/", data);
+      }
       fetchSkills();
     } catch (error) {
-      console.error("Error posting skill:", error);
+      console.error("Error saving skill:", error);
     }
   };
 
   const deleteSkill = async (id: number) => {
     try {
-      await axiosInstance.delete(`/api/v1/technical-skills/${id}/`, {
-        headers: { Authorization: `Bearer ${getAccessToken()}` },
-      });
+      await axiosInstance.delete(`/api/v1/technical-skills/${id}/`);
       fetchSkills();
     } catch (error) {
       console.error("Error deleting skill:", error);
@@ -140,23 +142,44 @@ export default function Skill() {
         <h1 className="text-3xl font-bold text-gray-800 flex-1 text-center">Technical Skills</h1>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <button onClick={() => { setModalType("add"); setIsModalOpen(true); }}>
+            <button
+              onClick={() => {
+                setModalType("add");
+                setSelectedSkill(null);
+                setIsModalOpen(true);
+              }}
+            >
               <FaCirclePlus className="text-2xl hover:text-sky-600" />
             </button>
           </DialogTrigger>
-          <SkillModal modalType={modalType} postSkill={postSkill} closeModal={() => setIsModalOpen(false)} />
+          <SkillModal
+            modalType={modalType}
+            skillData={selectedSkill}
+            handleSkill={handleSkill}
+            closeModal={() => setIsModalOpen(false)}
+          />
         </Dialog>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {skills.map((skill: Skill) => (
-          <div key={skill.id} className="bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-xl transition">
+          <div
+            key={skill.id}
+            className="bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-xl transition"
+          >
             <div className="flex justify-between content-center">
               <p className="text-lg font-normal">{skill.skill}</p>
               <div className="flex flex-row gap-2 items-center">
                 <p className="text-lg font-normal">{skill.level}/10</p>
                 <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                   <DialogTrigger asChild>
-                    <button className="text-blue-500 hover:text-blue-700" onClick={() => setModalType("edit")}>
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => {
+                        setModalType("edit");
+                        setSelectedSkill(skill);
+                        setIsModalOpen(true);
+                      }}
+                    >
                       <FaEdit className="text-sky-600" size={20} />
                     </button>
                   </DialogTrigger>
@@ -167,7 +190,10 @@ export default function Skill() {
               </div>
             </div>
             <div className="w-full bg-gray-300 h-4 rounded-full mt-2">
-              <div className="bg-sky-600 h-4 rounded-full transition-all duration-500" style={{ width: `${skill.level * 10}%` }}></div>
+              <div
+                className="bg-sky-600 h-4 rounded-full transition-all duration-500"
+                style={{ width: `${skill.level * 10}%` }}
+              ></div>
             </div>
           </div>
         ))}

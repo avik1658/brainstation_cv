@@ -103,7 +103,7 @@ export default function Navbar() {
             <div className="flex gap-4">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="bg-black text-white hover:bg-gray-700">
+                        <Button variant="outline" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
                             Download
                         </Button>
                     </DropdownMenuTrigger>
@@ -122,7 +122,7 @@ export default function Navbar() {
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="bg-black text-white hover:bg-gray-700">
+                        <Button variant="outline" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
                             Profile
                         </Button>
                     </DropdownMenuTrigger>
