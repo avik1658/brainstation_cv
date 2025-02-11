@@ -18,6 +18,22 @@ import axiosInstance from "@/axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  KeyboardSensor,
+  DragEndEvent
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  rectSortingStrategy,
+  SortableContext,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import SortableItem from "./SortableItem";
 
 interface SkillFormData {
   skill: string;
@@ -39,7 +55,7 @@ interface SkillModalProps {
 const formSchema = z.object({
   skill: z.string().min(1, "Skill is required"),
   level: z.number().min(1, "Minimum level is 1").max(10, "Maximum level is 10"),
-  priority: z.number().min(1, "Minimum priority is 1").max(10, "Maximum priority is 10"),
+  priority: z.number().min(1, "Minimum priority is 1").max(100, "Maximum priority is 100"),
 });
 
 function SkillModal({ modalType, skillData, handleSkill, closeModal }: SkillModalProps) {
@@ -136,6 +152,37 @@ export default function Skill() {
     }
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setSkills((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        const newItems = arrayMove(items, oldIndex, newIndex);
+
+        // Update priorities based on new order
+        newItems.forEach(async (item, index) => {
+          await axiosInstance.put(`/api/v1/technical-skills/${item.id}/`, { ...item, priority: index + 1 });
+          await fetchSkills();
+        });
+
+        return newItems;
+      });
+    }
+  };
+
   return (
     <div className="p-12 bg-gray-100 rounded-2xl shadow-lg max-w-6xl mx-auto my-5">
       <div className="flex justify-between items-center mb-6">
@@ -160,44 +207,53 @@ export default function Skill() {
           />
         </Dialog>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {skills.map((skill: Skill) => (
-          <div
-            key={skill.id}
-            className="bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-xl transition"
-          >
-            <div className="flex justify-between content-center">
-              <p className="text-lg font-normal">{skill.skill}</p>
-              <div className="flex flex-row gap-2 items-center">
-                <p className="text-lg font-normal">{skill.level}/10</p>
-                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                  <DialogTrigger asChild>
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => {
-                        setModalType("edit");
-                        setSelectedSkill(skill);
-                        setIsModalOpen(true);
-                      }}
-                    >
-                      <FaEdit className="text-sky-600" size={20} />
-                    </button>
-                  </DialogTrigger>
-                </Dialog>
-                <button className="text-red-500 hover:text-red-700" onClick={() => deleteSkill(skill.id)}>
-                  <MdDelete size={20} />
-                </button>
-              </div>
-            </div>
-            <div className="w-full bg-gray-300 h-4 rounded-full mt-2">
-              <div
-                className="bg-sky-600 h-4 rounded-full transition-all duration-500"
-                style={{ width: `${skill.level * 10}%` }}
-              ></div>
-            </div>
+
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={skills} strategy={rectSortingStrategy}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {skills.map((skill: Skill) => (
+              <SortableItem key={skill.id} id={skill.id}>
+                <div
+                  className="bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-xl transition"
+                >
+                  <div className="flex justify-between content-center">
+                    <p className="text-lg font-normal">{skill.skill}</p>
+                    <div className="flex flex-row gap-2 items-center">
+                      <p className="text-lg font-normal">{skill.level}/10</p>
+                      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                        <DialogTrigger asChild>
+                          <button
+                            className="text-blue-500 hover:text-blue-700"
+                            onClick={() => {
+                              setModalType("edit");
+                              setSelectedSkill(skill);
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            <FaEdit className="text-sky-600" size={20} />
+                          </button>
+                        </DialogTrigger>
+                      </Dialog>
+                      <button
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => deleteSkill(skill.id)}
+                      >
+                        <MdDelete size={20} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-300 h-4 rounded-full mt-2">
+                    <div
+                      className="bg-sky-600 h-4 rounded-full transition-all duration-500"
+                      style={{ width: `${skill.level * 10}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </SortableItem>
+            ))}
           </div>
-        ))}
-      </div>
+        </SortableContext>
+      </DndContext>
     </div>
   );
 }

@@ -173,7 +173,6 @@ const sensors = useSensors(
           await axiosInstance.put(`/api/v1/trainings/${item.id}/`, { ...item, priority: index + 1 });
           await fetchTrainings();
         });
-
         return newItems;
       });
     }
