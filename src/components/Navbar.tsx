@@ -16,6 +16,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { logoutUser } from "@/utils/auth";
+import axiosInstance from "@/axios";
+
 
 interface DropdownProps<T extends string | number> {
     label: string;
@@ -56,7 +58,7 @@ function NavModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
     const [imageType, setImageType] = useState<string>("Image");
     const [education, setEducation] = useState<string>("Cv priority");
     const [reference, setReference] = useState<string>("Default");
-    
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-4xl w-full">
@@ -93,6 +95,24 @@ function NavModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
 export default function Navbar() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    const downloadCV = async () => {
+        try {
+            const response = await axiosInstance.get("/api/v1/generate-pdf/", {
+                responseType: "blob", 
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "CV.pdf"); 
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error("Error downloading CV:", error);
+        }
+    };
+
     return (
         <nav className="bg-indigo-950 text-white px-6 py-4 shadow-md flex flex-col md:flex-row justify-between items-center">
             <div className="flex gap-4 items-center">
@@ -114,7 +134,7 @@ export default function Navbar() {
                         <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">
                             Download 2:3
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => setIsDialogOpen(true)}>
+                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={downloadCV}>
                             Download Custom
                         </DropdownMenuItem>
                     </DropdownMenuContent>
