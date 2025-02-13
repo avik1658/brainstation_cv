@@ -98,13 +98,16 @@ export default function Navbar() {
     const downloadCV = async () => {
         try {
             const response = await axiosInstance.get("/api/v1/generate-pdf/", {
-                responseType: "blob", 
+                responseType: "blob",
+                timeout: 10000,
+                headers: {
+                    'Accept': 'application/pdf',
+                }
             });
-
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", "CV.pdf"); 
+            link.setAttribute("download", "CV.pdf");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -112,6 +115,7 @@ export default function Navbar() {
             console.error("Error downloading CV:", error);
         }
     };
+
 
     return (
         <nav className="bg-indigo-950 text-white px-6 py-4 shadow-md flex flex-col md:flex-row justify-between items-center">
@@ -135,6 +139,9 @@ export default function Navbar() {
                             Download 2:3
                         </DropdownMenuItem>
                         <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={downloadCV}>
+                            Download Default
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => setIsDialogOpen(true)}>
                             Download Custom
                         </DropdownMenuItem>
                     </DropdownMenuContent>
