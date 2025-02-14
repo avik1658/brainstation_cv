@@ -55,10 +55,6 @@ export default function Employee() {
             setNextPage(response.data.next);
             setPrevPage(response.data.previous);
         } catch (error) {
-            setEmployees([])
-            setTotalEmployees(0);
-            setNextPage(null);
-            setPrevPage(null);
             console.error("Error fetching employees:", error);
         }
     };
@@ -104,7 +100,7 @@ export default function Employee() {
     }, [pageSize]);
 
     useEffect(() => {
-           fetchEmployee(searchTerm, currentPage, pageSize);
+        fetchEmployee(searchTerm, currentPage, pageSize);
     }, [searchTerm, currentPage, pageSize]);
 
 

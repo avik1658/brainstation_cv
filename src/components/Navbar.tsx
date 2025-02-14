@@ -17,33 +17,46 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { logoutUser } from "@/utils/auth";
 import axiosInstance from "@/axios";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+    SelectGroup
+} from "@/components/ui/select"; 
 
-
-interface DropdownProps<T extends string | number> {
+interface DropdownProps {
     label: string;
-    options: T[];
-    selected: T;
-    setSelected: (value: T) => void;  
+    options: (string | number)[];
+    selected: string | number;
+    setSelected: (value: string | number) => void;  
 }
 
-function Dropdown<T extends string | number>({ label, options, selected, setSelected }: DropdownProps<T>) {
+function Dropdown({ label, options, selected, setSelected }: DropdownProps) {
     return (
         <div className="flex flex-row justify-between items-center">
             <Label className="w-2/3">{label}</Label>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-1/3 overflow-clip">
-                        {selected || "Select"}
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-48">
-                    {options.map((option) => (
-                        <DropdownMenuItem key={option} onClick={() => setSelected(option)}>
-                            {option}
-                        </DropdownMenuItem>
-                    ))}
-                </DropdownMenuContent>
-            </DropdownMenu>
+            <Select
+                value={selected.toString()} 
+                onValueChange={(value) => {
+                    const parsedValue = typeof options[0] === "number" ? Number(value) : value;
+                    setSelected(parsedValue);
+                }}
+            >
+                <SelectTrigger className="min-w-32 w-fit">
+                    <SelectValue placeholder={selected.toString()} />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        {options.map((option) => (
+                            <SelectItem key={option} value={option.toString()}> 
+                                {option}
+                            </SelectItem>
+                        ))}
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
         </div>
     );
 }
@@ -59,8 +72,14 @@ function NavModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
     const [education, setEducation] = useState<string>("Cv priority");
     const [reference, setReference] = useState<string>("Default");
 
+    const handleSelected = <T extends string | number>(
+        setter: React.Dispatch<React.SetStateAction<T>>
+        ) => (value: string | number) => {
+        setter(value as T);
+    };
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="max-w-4xl w-full">
                 <DialogHeader>
                     <DialogTitle>Download CV in Custom Format</DialogTitle>
@@ -70,17 +89,17 @@ function NavModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
                 </DialogHeader>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-2">
-                        <Dropdown label="Project in First Page" options={[1, 2, 3, 4]} selected={projectFirst} setSelected={setProjectFirst} />
-                        <Dropdown label="Project in Second Page" options={[1, 2, 3, 4]} selected={projectSecond} setSelected={setProjectSecond} />
-                        <Dropdown label="No. of Technical Skill" options={[1, 2, 3, 4, 5, 6, 7, 8]} selected={technicalSkill} setSelected={setTechnicalSkill} />
-                        <Dropdown label="No. of Achievement" options={[1, 2, 3, 4]} selected={achievement} setSelected={setAchievement} />
-                        <Dropdown label="No. of Training" options={[1, 2, 3, 4]} selected={training} setSelected={setTraining} />
+                        <Dropdown label="Project in First Page" options={[1, 2, 3, 4]} selected={projectFirst} setSelected={handleSelected(setProjectFirst)} />
+                        <Dropdown label="Project in Second Page" options={[1, 2, 3, 4]} selected={projectSecond} setSelected={handleSelected(setProjectSecond)} />
+                        <Dropdown label="No. of Technical Skill" options={[1, 2, 3, 4, 5, 6, 7, 8]} selected={technicalSkill} setSelected={handleSelected(setTechnicalSkill)} />
+                        <Dropdown label="No. of Achievement" options={[1, 2, 3, 4]} selected={achievement} setSelected={handleSelected(setAchievement)} />
+                        <Dropdown label="No. of Training" options={[1, 2, 3, 4]} selected={training} setSelected={handleSelected(setTraining)} />
                     </div>
                     <div className="flex flex-col gap-2">
-                        <Dropdown label="Name Type" options={["Full Name", "Initials"]} selected={nameType} setSelected={setNameType} />
-                        <Dropdown label="Image Type" options={["Image", "Blank", "Initials"]} selected={imageType} setSelected={setImageType} />
-                        <Dropdown label="Education" options={["Cv priority", "B.sc"]} selected={education} setSelected={setEducation} />
-                        <Dropdown label="Reference in CV" options={["Default", "Bill Gates", "Mark Zuckerberg"]} selected={reference} setSelected={setReference} />
+                        <Dropdown label="Name Type" options={["Full Name", "Initials"]} selected={nameType} setSelected={handleSelected(setNameType)} />
+                        <Dropdown label="Image Type" options={["Image", "Blank", "Initials"]} selected={imageType} setSelected={handleSelected(setImageType)} />
+                        <Dropdown label="Education" options={["Cv priority", "B.sc"]} selected={education} setSelected={handleSelected(setEducation)} />
+                        <Dropdown label="Reference in CV" options={["Default", "Bill Gates", "Mark Zuckerberg"]} selected={reference} setSelected={handleSelected(setReference)} />
                     </div>
                 </div>
 
@@ -91,6 +110,7 @@ function NavModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
         </Dialog>
     );
 }
+
 
 export default function Navbar() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);

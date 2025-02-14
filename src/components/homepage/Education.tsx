@@ -115,7 +115,7 @@ function EducationModal({
     formState: { errors },
   } = useForm<EducationFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: educationData || educationData || { passing_year: 0, priority: 1, degree: 0, university: 0, department: 0 },
+    defaultValues: educationData || { passing_year: 0, priority: 1, degree: 0, university: 0, department: 0 },
   });
 
   useEffect(() => {
