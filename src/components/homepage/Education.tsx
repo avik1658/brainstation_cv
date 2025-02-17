@@ -326,11 +326,11 @@ export default function Education() {
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
 
-        // Update priorities based on new order
-        newItems.forEach(async (item, index) => {
-          await axiosInstance.put(`/api/v1/educations/${item.id}/`, { ...item, priority: index + 1 });
-          await fetchEducation();
-        });
+        Promise.all(
+          newItems.map((item, index) =>
+            axiosInstance.put(`/api/v1/educations/${item.id}/`, { ...item, priority: index + 1 })
+          )
+        ).then(fetchEducation);
 
         return newItems;
       });

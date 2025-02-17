@@ -210,11 +210,11 @@ export default function Project() {
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
 
-        // Update priorities based on new order
-        newItems.forEach(async (item, index) => {
-          await axiosInstance.put(`/api/v1/projects/${item.id}/`, { ...item, priority: index + 1 });
-          await fetchProjects();
-        });
+        Promise.all(
+          newItems.map((item, index) =>
+            axiosInstance.put(`/api/v1/projects/${item.id}/`, { ...item, priority: index + 1 })
+          )
+        ).then(fetchProjects);
 
         return newItems;
       });

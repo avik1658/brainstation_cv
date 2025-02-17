@@ -167,12 +167,12 @@ const sensors = useSensors(
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
 
-        // Update priorities based on new order
-        newItems.forEach(async (item, index) => {
-          console.log("Drag and drop event")
-          await axiosInstance.put(`/api/v1/trainings/${item.id}/`, { ...item, priority: index + 1 });
-          await fetchTrainings();
-        });
+        Promise.all(
+          newItems.map((item, index) =>
+            axiosInstance.put(`/api/v1/trainings/${item.id}/`, { ...item, priority: index + 1 })
+          )
+        ).then(fetchTrainings);
+
         return newItems;
       });
     }

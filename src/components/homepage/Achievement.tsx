@@ -165,12 +165,11 @@ export default function Achievement() {
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
 
-        // Update priorities based on new order
-        newItems.forEach(async (item, index) => {
-          console.log("Drag and drop event")
-          await axiosInstance.put(`/api/v1/achievements/${item.id}/`, { ...item, priority: index + 1 });
-          await fetchAchievements();
-        });
+        Promise.all(
+          newItems.map((item, index) =>
+            axiosInstance.put(`/api/v1/achievements/${item.id}/`, { ...item, priority: index + 1 })
+          )
+        ).then(fetchAchievements);
 
         return newItems;
       });

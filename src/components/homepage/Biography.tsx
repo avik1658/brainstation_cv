@@ -274,7 +274,7 @@ export default function Biography() {
         </Dialog>
         {profile ? (
           <>
-            <h1 className="text-2xl font-bold mt-4 text-gray-900">{profile.name}</h1>
+            <h1 className="text-2xl text-center font-bold mt-4 text-gray-900">{profile.name}</h1>
             <p className="text-base font-normal">Designation : <span className="text-base font-normal text-gray-700 mr-2">{getDesignationName(profile.designation)}</span></p>
             <p className="text-base font-normal">SBU : <span className="text-base font-normal text-gray-700 mr-2">{getSbuName(profile.sub_project)}</span></p>
           </>
