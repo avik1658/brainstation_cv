@@ -35,6 +35,7 @@ interface Designation {
   name: string;
 }
 
+
 export default function Employee() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,7 +45,7 @@ export default function Employee() {
   const [nextPage, setNextPage] = useState<string | null>(null);
   const [prevPage, setPrevPage] = useState<string | null>(null);
   const [pageSize, setPageSize] = useState(10);
-  const [selectedEmployees, setSelectedEmployees] = useState<number[]>([]);
+  const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
   const [selectAll, setSelectAll] = useState(false);
 
   const fetchEmployee = async (query = "", page = 1, pageSize = 10) => {
@@ -92,13 +93,10 @@ export default function Employee() {
   };
 
   const downloadSelectedCVs = async () => {
-    for (const id of selectedEmployees) {
-      const employee = employees.find((emp) => emp.id === id);
-      if (employee) {
-        await downloadCV(employee.id, employee.bs_id);
-      }
+    for (const emp of selectedEmployees) {
+        await downloadCV(emp.id, emp.bs_id);
     }
-};
+  };
 
 
   useEffect(() => {
@@ -120,9 +118,11 @@ export default function Employee() {
   const handleNextPage = () => nextPage && setCurrentPage((prev) => prev + 1);
   const handlePrevPage = () => prevPage && setCurrentPage((prev) => prev - 1);
 
-  const toggleSelection = (id: number) => {
+  const toggleSelection = (employee: Employee) => {
     setSelectedEmployees((prev) =>
-      prev.includes(id) ? prev.filter((empId) => empId !== id) : [...prev, id]
+      prev.includes(employee)
+        ? prev.filter((e) => e.id !== employee.id)
+        : [...prev, employee]
     );
   };
 
@@ -130,7 +130,7 @@ export default function Employee() {
     if (selectAll) {
       setSelectedEmployees([]);
     } else {
-      setSelectedEmployees(employees.map((e) => e.id));
+      setSelectedEmployees(employees);
     }
     setSelectAll(!selectAll);
   };
@@ -160,8 +160,10 @@ export default function Employee() {
           {employees.map((employee) => (
             <TableRow key={employee.id} className="h-10">
               <TableCell>
-                <Checkbox checked={selectedEmployees.includes(employee.id)} 
-                onCheckedChange={() => toggleSelection(employee.id)} />
+                <Checkbox
+                  checked={selectedEmployees.some((e) => e.id === employee.id)}
+                  onCheckedChange={() => toggleSelection(employee)}
+                />
               </TableCell>
               <TableCell>{employee.bs_id}</TableCell>
               <TableCell>{employee.name}</TableCell>
