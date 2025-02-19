@@ -12,6 +12,7 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FaDownload } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 import {
   Select,
   SelectContent,
@@ -137,7 +138,7 @@ export default function Employee() {
 
 
   return (
-    <div className="p-12 bg-gray-100 rounded-2xl shadow-lg max-w-6xl mx-auto my-5 gap-4">
+    <div className="p-12 bg-gray-100 rounded-2xl shadow-lg max-w-7xl mx-auto my-5 gap-4">
       <h1 className="text-3xl font-bold text-center mb-4">Employee List</h1>
 
       <Input type="text" placeholder="Search By Name..." className="mb-4 p-2 border border-gray-300 rounded" 
@@ -150,9 +151,13 @@ export default function Employee() {
             <TableHead className="w-1/12">
               <Checkbox checked={selectAll} onCheckedChange={toggleSelectAll} />
             </TableHead>
-            <TableHead className="w-2/12">BS ID</TableHead>
-            <TableHead className="w-4/12">Name</TableHead>
-            <TableHead className="w-4/12">Designation</TableHead>
+            <TableHead className="w-1/12">Pic</TableHead>
+            <TableHead className="w-1/12">BS ID</TableHead>
+            <TableHead className="w-2/12">Name</TableHead>
+            <TableHead className="w-2/12">Designation</TableHead>
+            <TableHead className="w-1/12">Update Status</TableHead>
+            <TableHead className="w-2/12">Enthusiast At</TableHead>
+            <TableHead className="w-1/12 text-center">Edit</TableHead>
             <TableHead className="w-1/12 text-center">Download</TableHead>
           </TableRow>
         </TableHeader>
@@ -165,9 +170,19 @@ export default function Employee() {
                   onCheckedChange={() => toggleSelection(employee)}
                 />
               </TableCell>
+              <TableCell>
+                <img src="/images/profile.png" alt="profile" className="w-8 h-8 rounded-full shadow-md" />
+              </TableCell>
               <TableCell>{employee.bs_id}</TableCell>
               <TableCell>{employee.name}</TableCell>
               <TableCell>{getDesignationName(employee.designation)}</TableCell>
+              <TableCell>Updated By kashem at 14:30pm</TableCell>
+              <TableCell>React,Angular</TableCell>
+              <TableCell className="text-center">
+                  <div className="flex justify-center">
+                      <FaEdit className="hover:text-sky-500 transition cursor-pointer" size={18}/>
+                  </div>
+               </TableCell>
               <TableCell className="text-center">
                 <div className="flex justify-center">
                     <FaDownload className="hover:text-sky-500 transition cursor-pointer" onClick={()=>downloadCV(employee.id,employee.bs_id)} />
