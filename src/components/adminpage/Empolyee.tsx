@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 interface Employee {
   id: number;
   name: string;
+  profile_picture: string;
   bs_id: string;
   designation: number;
 }
@@ -185,8 +186,14 @@ export default function Employee() {
                   onCheckedChange={() => toggleSelection(employee)}
                 />
               </TableCell>
-              <TableCell>
-                <img src="/images/profile.png" alt="profile" className="w-8 h-8 rounded-full shadow-md" />
+              <TableCell className="text-center">
+                <div className="flex justify-start">
+                  <img
+                    src={`http://localhost:8000/${employee.profile_picture}`}
+                    alt="profile"
+                    className="w-12 h-12 rounded-full"
+                  />
+                </div>
               </TableCell>
               <TableCell>{employee.bs_id}</TableCell>
               <TableCell>{employee.name}</TableCell>

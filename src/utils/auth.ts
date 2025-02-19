@@ -28,7 +28,9 @@ export const updateToken = async () => {
     return { access, refresh };
   } catch (error) {
     console.error("Failed to refresh tokens:", error);
-    logoutUser();
+    setTimeout(() => {
+      window.location.href = "/"; // Redirect after delay
+    }, 500);
     throw error;
   }
 };
@@ -38,11 +40,25 @@ export const getAccessToken = () => {
   return localStorage.getItem("localAccessToken"); 
 };
 
-export const logoutUser = () => {
-  console.log("Log out user function")
+export const logoutUser = async () => {
+  console.log("Log out user function");
+  const refreshToken = localStorage.getItem("localRefreshToken");
+
+  try {
+    if (refreshToken) {
+      await axiosInstance1.post("/api/v1/logout/", {
+        refresh: refreshToken,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to logout", error);
+    throw error;
+  }
+  
   localStorage.removeItem("localAccessToken");
   localStorage.removeItem("localRefreshToken");
 
+  // Redirect to home page after a short delay
   setTimeout(() => {
     window.location.href = "/"; // Redirect after delay
   }, 500);
