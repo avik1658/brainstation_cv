@@ -1,13 +1,25 @@
 import axios from "axios";
 import { getAccessToken, updateToken, logoutUser } from "./utils/auth";
+import { useLocation } from "react-router-dom";
 
-const axiosInstance = axios.create({
+const useAxios = () => {
+  const location = useLocation();
+  return location.pathname.startsWith("/admin-edit") ? axiosInstance2 : axiosInstance1;
+};
+
+
+const axiosInstance1 = axios.create({
+  baseURL: "http://localhost:8000",
+  timeout: 1000,
+});
+
+const axiosInstance2 = axios.create({
   baseURL: "http://localhost:8000",
   timeout: 1000,
 });
 
 // Request Interceptor: Attach token to requests
-axiosInstance.interceptors.request.use(
+axiosInstance1.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
     if (token) {
@@ -19,8 +31,22 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Request Interceptor: Attach token to requests
+axiosInstance2.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("editAccessToken");
+    if (token) {
+      console.log(`Access logic called`);
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+
 // Response Interceptor: Handle token refresh on 401 errors
-axiosInstance.interceptors.response.use(
+axiosInstance1.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
@@ -46,10 +72,10 @@ axiosInstance.interceptors.response.use(
         console.log(`Refresh logic called`);
 
         // Update global default Authorization header
-        axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${access}`;
+        axiosInstance1.defaults.headers.common["Authorization"] = `Bearer ${access}`;
         originalRequest.headers["Authorization"] = `Bearer ${access}`;
 
-        return axiosInstance(originalRequest); // Retry the failed request
+        return axiosInstance1(originalRequest); // Retry the failed request
       } catch {
         console.log("Token refresh failed. Logging out...");
         logoutUser(); 
@@ -59,4 +85,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default axiosInstance;
+export {useAxios,axiosInstance1,axiosInstance2};

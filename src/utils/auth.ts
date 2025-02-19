@@ -1,6 +1,7 @@
-import axiosInstance from "@/axios";
+import {axiosInstance1} from "@/axios";
 
 export const updateToken = async () => {
+  
   try {
     const refreshToken = localStorage.getItem("localRefreshToken");
     console.log(`update token function`)
@@ -10,7 +11,7 @@ export const updateToken = async () => {
       throw new Error("No refresh token available");
     }
 
-    const response = await axiosInstance.post("/api/token/refresh/", {
+    const response = await axiosInstance1.post("/api/token/refresh/", {
       refresh: refreshToken,
     });
 

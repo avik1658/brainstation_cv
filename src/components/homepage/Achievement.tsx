@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import axiosInstance from "@/axios";
+import {useAxios}  from "@/axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -109,6 +109,7 @@ export default function Achievement() {
   const [modalType, setModalType] = useState<string>("");
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const axiosInstance = useAxios();
 
   const fetchAchievements = async () => {
     try {

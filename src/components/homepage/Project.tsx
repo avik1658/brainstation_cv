@@ -15,7 +15,7 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import axiosInstance from "@/axios";
+import {useAxios}  from "@/axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -154,7 +154,8 @@ export default function Project() {
   const [modalType, setModalType] = useState<string>("");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const axiosInstance = useAxios();
+  
   const fetchProjects = async () => {
     try {
       const response = await axiosInstance.get<Project[]>("/api/v1/projects/");

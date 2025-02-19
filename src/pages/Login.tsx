@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import axiosInstance from "@/axios";
+import {useAxios} from "@/axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -26,6 +26,7 @@ type FormData = z.infer<typeof formSchema>;
 export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const axiosInstance = useAxios();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),

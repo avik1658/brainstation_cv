@@ -1,4 +1,4 @@
-import axiosInstance from "@/axios";
+import {useAxios} from "@/axios";
 import { useState, useEffect } from "react";
 import {
   Table,
@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useNavigate } from "react-router-dom";
 
 interface Employee {
   id: number;
@@ -48,6 +49,8 @@ export default function Employee() {
   const [pageSize, setPageSize] = useState(10);
   const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const axiosInstance = useAxios();
+  const navigate = useNavigate();
 
   const fetchEmployee = async (query = "", page = 1, pageSize = 10) => {
     try {
@@ -64,6 +67,18 @@ export default function Employee() {
       console.error("Error fetching employees:", error);
     }
   };
+
+  const fetchEditToken = async (id:number) => {
+    try {
+      const response = await axiosInstance.get(`/api/token/${id}`);
+      localStorage.setItem("editAccessToken", response.data.access);
+      console.log(`Edit Access Token: ${response.data.access}`);
+      navigate("/admin-edit");
+    } catch (error) {
+      console.error("Error getting token:", error);
+    }
+  }
+
 
   const fetchDesignation = async () => {
     try {
@@ -179,9 +194,14 @@ export default function Employee() {
               <TableCell>Updated By kashem at 14:30pm</TableCell>
               <TableCell>React,Angular</TableCell>
               <TableCell className="text-center">
-                  <div className="flex justify-center">
-                      <FaEdit className="hover:text-sky-500 transition cursor-pointer" size={18}/>
-                  </div>
+                    <div className="flex justify-center">
+                      <FaEdit
+                        className="hover:text-sky-500 transition cursor-pointer"
+                        size={18}
+                        onClick={async () => {
+                          fetchEditToken(employee.id) }}
+                      />
+                    </div>
                </TableCell>
               <TableCell className="text-center">
                 <div className="flex justify-center">

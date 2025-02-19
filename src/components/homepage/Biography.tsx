@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import axiosInstance from "@/axios";
+import {useAxios}  from "@/axios";
 import { FaEdit } from "react-icons/fa";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -175,6 +175,7 @@ export default function Biography() {
   const [newProfilePicture, setNewProfilePicture] = useState<File | null>(null);
   const [isProfilePicModalOpen, setIsProfilePicModalOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const axiosInstance = useAxios();
 
   const fetchEmployee = async () => {
     try {

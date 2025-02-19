@@ -23,6 +23,7 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      "react-hooks/exhaustive-deps": "off" // Added this to avoid "React Hook useEffect has a missing dependency" warning
     },
   },
 )

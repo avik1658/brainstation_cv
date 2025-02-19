@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axiosInstance from "@/axios";
+import {useAxios} from "@/axios";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { FaCirclePlus } from "react-icons/fa6";
@@ -226,6 +226,7 @@ export default function Education() {
   const [degrees, setDegrees] = useState<Degree[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
+  const axiosInstance = useAxios();
 
 
   const fetchEducation = async () => {

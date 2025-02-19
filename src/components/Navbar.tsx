@@ -16,7 +16,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { logoutUser } from "@/utils/auth";
-import axiosInstance from "@/axios";
+import {useAxios} from "@/axios";
 import {
     Select,
     SelectTrigger,
@@ -114,6 +114,7 @@ function NavModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
 
 export default function Navbar() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const axiosInstance = useAxios();
 
     const downloadCV = async () => {
         try {
