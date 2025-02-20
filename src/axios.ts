@@ -18,6 +18,11 @@ const axiosInstance2 = axios.create({
   timeout: 1000,
 });
 
+// Static variables for token refresh management
+let isRefreshing = false;
+let refreshQueue: ((newToken: string) => void)[] = []; // Explicitly typed queue
+
+
 // Request Interceptor: Attach token to requests
 axiosInstance1.interceptors.request.use(
   (config) => {
@@ -45,42 +50,63 @@ axiosInstance2.interceptors.request.use(
 );
 
 
-// Response Interceptor: Handle token refresh on 401 errors
 axiosInstance1.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log(`Refresh Instance`)
-    // If the error is due to an invalid refresh token, log out the user
+
+    // If the refresh token is invalid, log out
     if (
       error.response?.status === 401 &&
       error.response?.data?.detail === "Token is invalid or expired"
     ) {
       console.error("Refresh token is invalid or expired. Logging out...");
       logoutUser();
-      return Promise.reject(error); // Stop retrying
+      return Promise.reject(error);
     }
 
-    // If the error is due to an invalid access token, try to refresh the token
-    if (error.response?.status === 401 && 
-      error.response?.data?.detail === "Given token not valid for any token type" && 
-      !originalRequest._retry) {
+    // If the access token is expired, try refreshing it
+    if (
+      error.response?.status === 401 &&
+      error.response?.data?.detail === "Given token not valid for any token type" &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
 
-      originalRequest._retry = true; // Mark request as retried
+      // If refresh is already in progress, queue this request
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          refreshQueue.push((newToken: string) => {
+            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+            resolve(axiosInstance1(originalRequest));
+          });
+        });
+      }
+
+      // Begin refreshing the token
+      isRefreshing = true;
+
       try {
         const { access } = await updateToken();
-        console.log(`Refresh logic called`);
+        isRefreshing = false;
 
-        // Update global default Authorization header
+        // Update all queued requests with the new token
         axiosInstance1.defaults.headers.common["Authorization"] = `Bearer ${access}`;
-        originalRequest.headers["Authorization"] = `Bearer ${access}`;
+        refreshQueue.forEach((callback) => callback(access));
+        refreshQueue = []; // Clear queue
 
-        return axiosInstance1(originalRequest); // Retry the failed request
-      } catch {
+        // Retry the original request with the new token
+        originalRequest.headers["Authorization"] = `Bearer ${access}`;
+        return axiosInstance1(originalRequest);
+      } catch (err) {
         console.log("Token refresh failed. Logging out...");
-        logoutUser(); 
+        logoutUser();
+        isRefreshing = false;
+        refreshQueue = []; // Clear queue if refresh fails
+        return Promise.reject(err);
       }
     }
+
     return Promise.reject(error);
   }
 );
