@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
+import GenerateExcelModal from "./GenerateExcelModal";
 
 interface Employee {
   id: number;
@@ -50,6 +51,7 @@ export default function Employee() {
   const [pageSize, setPageSize] = useState(10);
   const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const axiosInstance = useAxios();
   const navigate = useNavigate();
 
@@ -157,8 +159,21 @@ export default function Employee() {
     <div className="p-12 bg-gray-100 rounded-2xl shadow-lg max-w-7xl mx-auto my-5 gap-4">
       <h1 className="text-3xl font-bold text-center mb-4">Employee List</h1>
 
-      <Input type="text" placeholder="Search By Name..." className="mb-4 p-2 border border-gray-300 rounded" 
-      onChange={(e) => setSearchTerm(e.target.value.toLowerCase())} />
+      <div className="flex flex-row items-center gap-x-4 mb-5">
+        <Input type="text" placeholder="Search By Name..." className="border border-gray-300 rounded" 
+        onChange={(e) => setSearchTerm(e.target.value.toLowerCase())} />
+
+        <Button className="bg-sky-600 hover:bg-sky-700 transition" onClick={() => setModalOpen(true)}>Generate Excel</Button>
+        <GenerateExcelModal 
+          isOpen={modalOpen} 
+          onClose={() => setModalOpen(false)} 
+          selectedIds={selectedEmployees.map(emp => emp.id)}
+        />
+
+      </div>
+
+
+
       
       <Table>
         <TableCaption className="text-sm font-medium">Total Employees: {totalEmployees}</TableCaption>
@@ -203,8 +218,8 @@ export default function Employee() {
               <TableCell className="text-center">
                     <div className="flex justify-center">
                       <FaEdit
-                        className="hover:text-sky-500 transition cursor-pointer"
-                        size={18}
+                        className="text-sky-500 hover:text-sky-600 transition cursor-pointer"
+                        size={20}
                         onClick={async () => {
                           fetchEditToken(employee.id) }}
                       />
@@ -212,7 +227,7 @@ export default function Employee() {
                </TableCell>
               <TableCell className="text-center">
                 <div className="flex justify-center">
-                    <FaDownload className="hover:text-sky-500 transition cursor-pointer" onClick={()=>downloadCV(employee.id,employee.bs_id)} />
+                    <FaDownload className="text-green-800 hover:text-green-900 transition cursor-pointer" size={16} onClick={()=>downloadCV(employee.id,employee.bs_id)} />
                 </div>
                </TableCell>
             </TableRow>

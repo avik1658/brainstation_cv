@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input";
 import {useAxios} from "@/axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import  { AxiosError } from 'axios';
+
 
 const formSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }),
@@ -24,7 +26,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function Login() {
-  const [error, setError] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const navigate = useNavigate();
   const axiosInstance = useAxios();
 
@@ -36,8 +38,11 @@ export default function Login() {
     },
   });
 
+  const removeErrorMsg = () => {
+    setErrorMsg(null);
+  }
+
   const onSubmit = async (data: FormData) => {
-    setError(null); 
     try {
       const response = await axiosInstance.post("/api/token/", data);
       const accessToken = response.data.access;
@@ -52,8 +57,14 @@ export default function Login() {
   
       navigate("/home");
     } catch (error) {
-      console.error("Login failed:", error);
-      setError("Invalid username or password.");
+    const err = error as AxiosError
+      if (!err?.response) {
+          setErrorMsg("No Server Response");
+      } else if (err.response?.status === 401) {
+          setErrorMsg("Wrong Username or Password");
+      } else {
+          setErrorMsg("Login Failed");
+      }  
     }
   };
 
@@ -70,7 +81,11 @@ export default function Login() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your username" {...field} />
+                    <Input placeholder="Enter your username" {...field}
+                    onChange={(e) => {
+                      field.onChange(e); 
+                      removeErrorMsg();
+                    }} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -83,13 +98,17 @@ export default function Login() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Enter your password" {...field} />
+                    <Input type="password" placeholder="Enter your password" {...field}
+                    onChange={(e) => {
+                      field.onChange(e); 
+                      removeErrorMsg();
+                    }}  />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {error && <p className="text-red-500 text-center font-semibold mb-4">{error}</p>}
+            {errorMsg && <p className="text-red-500 text-center font-semibold mb-4">{errorMsg}</p>}
             <Button type="submit" className="w-full">Submit</Button>
           </form>
         </Form>
