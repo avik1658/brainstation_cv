@@ -171,7 +171,7 @@ function ProfileModal({ profileData, updateProfile, closeModal, getDesignationNa
           <Label>Tags</Label>
           <div className="flex flex-wrap gap-2 mb-2 max-h-24 overflow-auto">
             {tags.map((tag, index) => (
-              <span key={index} className="bg-sky-500 px-2 text-white rounded-lg flex items-center">
+              <span key={index} className="bg-sky-500 px-2 text-white text-base text-center rounded-lg flex items-center">
                 {tag}
                 <button type="button" onClick={() => removeTag(tag)} className="ml-2 text-black">
                   ×
@@ -333,7 +333,7 @@ export default function Biography() {
             <p className="text-base font-normal">SBU : <span className="text-base font-normal text-gray-700 mr-2">{getSbuName(profile.sub_project)}</span></p>
             <div className="flex flex-wrap flex-row justify-center gap-2 mt-2">
               {profile.tags.map((tag,index)=>{
-                return <span key={index} className="text-base font-normal bg-sky-500 rounded-xl px-2">{tag}</span>
+                return <span key={index} className="text-white text-base text-center font-normal bg-sky-500 rounded-xl px-2">{tag}</span>
               })}
             </div>
           </>

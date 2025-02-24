@@ -174,7 +174,7 @@ export default function Navbar() {
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <DropdownMenu>
+                {/* <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
                             Profile
@@ -185,7 +185,10 @@ export default function Navbar() {
                         <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">Profile Update</DropdownMenuItem>
                         <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => logoutUser()}>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
+                <Button variant="outline" className="bg-red-600 text-white hover:text-white hover:bg-red-700" onClick={() => logoutUser()}>
+                        Logout
+                </Button>
             </div>
 
             <NavModal isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />

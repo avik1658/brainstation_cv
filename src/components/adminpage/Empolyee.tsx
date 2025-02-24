@@ -32,6 +32,9 @@ interface Employee {
   profile_picture: string;
   bs_id: string;
   designation: number;
+  tags : string[];
+  updated_status : string;
+  updated_date : string;
 }
 
 interface Designation {
@@ -156,7 +159,7 @@ export default function Employee() {
 
 
   return (
-    <div className="p-12 bg-gray-100 rounded-2xl shadow-lg max-w-7xl mx-auto my-5 gap-4">
+    <div className="p-12 bg-gray-100 rounded-2xl shadow-lg max-w-[1500px] mx-auto mt-5 gap-4">
       <h1 className="text-3xl font-bold text-center mb-4">Employee List</h1>
 
       <div className="flex flex-row items-center gap-x-4 mb-5">
@@ -179,17 +182,17 @@ export default function Employee() {
         <TableCaption className="text-sm font-medium">Total Employees: {totalEmployees}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-1/12">
+            <TableHead className="w-[5%]">
               <Checkbox checked={selectAll} onCheckedChange={toggleSelectAll} />
             </TableHead>
-            <TableHead className="w-1/12">Pic</TableHead>
-            <TableHead className="w-1/12">BS ID</TableHead>
-            <TableHead className="w-2/12">Name</TableHead>
-            <TableHead className="w-2/12">Designation</TableHead>
-            <TableHead className="w-1/12">Update Status</TableHead>
-            <TableHead className="w-2/12">Enthusiast At</TableHead>
-            <TableHead className="w-1/12 text-center">Edit</TableHead>
-            <TableHead className="w-1/12 text-center">Download</TableHead>
+            <TableHead className="w-[5%]">Pic</TableHead>
+            <TableHead className="w-[5%]">BS ID</TableHead>
+            <TableHead className="w-[15%]">Name</TableHead>
+            <TableHead className="w-[15%]">Designation</TableHead>
+            <TableHead className="w-[20%]">Update Status</TableHead>
+            <TableHead className="w-[25%] text-center">Enthusiast At</TableHead>
+            <TableHead className="w-[5%] text-center">Edit</TableHead>
+            <TableHead className="w-[5%] text-center">Download</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -213,8 +216,14 @@ export default function Employee() {
               <TableCell>{employee.bs_id}</TableCell>
               <TableCell>{employee.name}</TableCell>
               <TableCell>{getDesignationName(employee.designation)}</TableCell>
-              <TableCell>Updated By kashem at 14:30pm</TableCell>
-              <TableCell>React,Angular</TableCell>
+              <TableCell>{employee.updated_status}</TableCell>
+              <TableCell>
+                  <div className="flex flex-wrap flex-row justify-center gap-2 mt-2">
+                    {employee.tags.map((tag,index)=>{
+                      return <span key={index} className="text-white text-base text-center font-normal bg-sky-500 rounded-xl px-2">{tag}</span>
+                    })}
+                  </div>
+              </TableCell>
               <TableCell className="text-center">
                     <div className="flex justify-center">
                       <FaEdit
