@@ -1,23 +1,32 @@
 import { Navigate, Route, Routes} from 'react-router-dom';
 import Login from './pages/Login';
 import Home from './pages/Home';
-import { isAuthenticated } from './utils/auth';
+import { getUserRole,isAuthenticated } from './utils/auth';
 import Admin from './pages/Admin';
 import AdminEdit from './pages/AdminEdit';
 
-function PrivateRoute({ children }: { children: JSX.Element }) {
-   return isAuthenticated() ? children : <Navigate to="/" replace />;
-  // return isAuthenticated() ? children : children;
+function PrivateRoute({ children, allowedRoles }: { children: JSX.Element, allowedRoles: string[] }) {
+  if (!isAuthenticated()) {
+    return <Navigate to="/" replace />;
+  }
+  const userRole = getUserRole();
+
+  // If userRole is missing or not in the allowedRoles list, redirect
+  if (!userRole || !allowedRoles.includes(userRole)) {
+    return <Navigate to="/home" replace />;
+  }
+  return children;
 }
+
 
 function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
-        <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
-        <Route path="/admin-edit" element={<PrivateRoute><AdminEdit /></PrivateRoute>} />
+        <Route path="/home" element={<PrivateRoute allowedRoles={["user", "admin"]}><Home /></PrivateRoute>} />
+        <Route path="/admin" element={<PrivateRoute allowedRoles={["admin"]}><Admin /></PrivateRoute>} />
+        <Route path="/admin-edit" element={<PrivateRoute allowedRoles={["admin"]}><AdminEdit /></PrivateRoute>} />
       </Routes>
     </>
   );

@@ -115,6 +115,7 @@ function NavModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
 export default function Navbar() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const axiosInstance = useAxios();
+    const userType = localStorage.getItem("role");
 
     const downloadCV = async () => {
         try {
@@ -146,6 +147,11 @@ export default function Navbar() {
             </div>
 
             <div className="flex gap-4">
+                {userType === "admin" && (
+                    <Button variant="outline" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700" onClick={() => window.location.href = "/admin"}>
+                        Admin Page
+                    </Button>
+                )}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">

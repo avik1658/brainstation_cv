@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {useAxios}  from "@/axios";
 import { FaEdit } from "react-icons/fa";
@@ -31,6 +31,7 @@ interface Profile {
   designation: number;
   sub_project: number;
   biography: string;
+  tags: string[];
 }
 
 interface Designation {
@@ -59,6 +60,7 @@ const formSchema = z.object({
   designation: z.number().min(1, "Please select a designation"),
   sub_project: z.number().min(1, "Please select an SBU"),
   biography: z.string().min(6, "Minimum 6 letters required").max(1000, "Maximum 1000 letters"),
+  tags: z.array(z.string()).optional()
 });
 
 function ProfileModal({ profileData, updateProfile, closeModal, getDesignationName, getSbuName, designation, sbu }: ProfileModalProps) {
@@ -70,16 +72,46 @@ function ProfileModal({ profileData, updateProfile, closeModal, getDesignationNa
     formState: { errors },
   } = useForm<Profile>({
     resolver: zodResolver(formSchema),
-    defaultValues: profileData || { name: "", designation: 0, sub_project: 0, biography: "" },
+    defaultValues: profileData || {
+      name: "",
+      designation: 0,
+      sub_project: 0,
+      biography: "",
+    },
   });
 
   useEffect(() => {
-    reset(profileData || { name: "", designation: 0, sub_project: 0, biography: "" });
+    reset(profileData || {
+      name: "",
+      designation: 0,
+      sub_project: 0,
+      biography: "",
+    });
+    setTags(profileData?.tags || []);  // Setting tag value
   }, [profileData, reset]);
 
+  useEffect(() => {
+    setTags(profileData?.tags || []);
+  }, [closeModal]);
+
+  const [tags, setTags] = useState<string[]>(profileData?.tags || []);
+  const tagInputRef = useRef<HTMLInputElement>(null);
+
+  const addTag = () => {
+    const value = tagInputRef.current?.value.trim();
+    if (value && !tags.includes(value)) {
+      setTags((prevTags) => [...prevTags, value]);
+      if (tagInputRef.current) tagInputRef.current.value = ""; // Clear input without triggering state change
+    }
+  };
+
+
+  const removeTag = (tag: string) => {
+    setTags(tags.filter((t) => t !== tag));
+  };
 
   const onSubmit = (data: Profile) => {
-    updateProfile(data);
+    updateProfile({ ...data, tags });
     reset();
     closeModal();
   };
@@ -88,7 +120,7 @@ function ProfileModal({ profileData, updateProfile, closeModal, getDesignationNa
     <DialogContent className="max-w-xl">
       <DialogHeader>
         <DialogTitle>Edit Profile</DialogTitle>
-        <DialogDescription/>
+        <DialogDescription></DialogDescription>
       </DialogHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
@@ -134,11 +166,32 @@ function ProfileModal({ profileData, updateProfile, closeModal, getDesignationNa
           <Textarea {...register("biography")} />
           {errors.biography && <p className="text-red-500">{errors.biography.message}</p>}
         </div>
-        <div className="mt-4">
-          <DialogFooter>
-            <Button type="submit" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">Update Profile</Button>
-          </DialogFooter>
-        </div>      
+
+        <div className="mt-2">
+          <Label>Tags</Label>
+          <div className="flex flex-wrap gap-2 mb-2 max-h-24 overflow-auto">
+            {tags.map((tag, index) => (
+              <span key={index} className="bg-sky-500 px-2 text-white rounded-lg flex items-center">
+                {tag}
+                <button type="button" onClick={() => removeTag(tag)} className="ml-2 text-black">
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Input type="text" ref={tagInputRef} />
+            <Button type="button" onClick={addTag} className="bg-sky-600 text-white hover:bg-sky-700">
+              Add
+            </Button>
+          </div>
+        </div>
+
+        <DialogFooter className="mt-4">
+          <Button type="submit" className="bg-sky-600 text-white hover:bg-sky-700">
+            Update Profile
+          </Button>
+        </DialogFooter>
       </form>
     </DialogContent>
   );
@@ -278,6 +331,11 @@ export default function Biography() {
             <h1 className="text-2xl text-center font-bold mt-4 text-gray-900">{profile.name}</h1>
             <p className="text-base font-normal">Designation : <span className="text-base font-normal text-gray-700 mr-2">{getDesignationName(profile.designation)}</span></p>
             <p className="text-base font-normal">SBU : <span className="text-base font-normal text-gray-700 mr-2">{getSbuName(profile.sub_project)}</span></p>
+            <div className="flex flex-wrap flex-row justify-center gap-2 mt-2">
+              {profile.tags.map((tag,index)=>{
+                return <span key={index} className="text-base font-normal bg-sky-500 rounded-xl px-2">{tag}</span>
+              })}
+            </div>
           </>
         ) : (
           <p>Loading...</p>

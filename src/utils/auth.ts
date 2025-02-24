@@ -57,6 +57,7 @@ export const logoutUser = async () => {
   
   localStorage.removeItem("localAccessToken");
   localStorage.removeItem("localRefreshToken");
+  localStorage.removeItem("role");
 
   // Redirect to home page after a short delay
   setTimeout(() => {
@@ -67,4 +68,8 @@ export const logoutUser = async () => {
 // Function to check if the user is authenticated
 export const isAuthenticated = () => {
   return Boolean(getAccessToken());
+};
+
+export const getUserRole = () => {
+  return localStorage.getItem("role") || ""; // Ensure it always returns a string
 };

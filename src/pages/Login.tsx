@@ -47,13 +47,16 @@ export default function Login() {
       const response = await axiosInstance.post("/api/token/", data);
       const accessToken = response.data.access;
       const refreshToken = response.data.refresh;
+      const role = response.data.is_admin ? "admin" : "user";
       
       console.log("Login successful:", response.data);
       console.log("Access Token:", accessToken);
+      console.log("Role:", role);
 
 
       localStorage.setItem("localAccessToken", accessToken);
       localStorage.setItem("localRefreshToken", refreshToken);
+      localStorage.setItem("role", role);
   
       navigate("/home");
     } catch (error) {
