@@ -346,7 +346,7 @@ export default function Biography() {
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
               <button onClick={() => { setIsModalOpen(true) }}>
-                <FaEdit className="text-sky-600" size={20}/>
+                <FaEdit className="text-sky-500 hover:text-sky-600 transition cursor-pointer" size={20}/>
               </button>
             </DialogTrigger>
             <ProfileModal

@@ -219,7 +219,7 @@ export default function Achievement() {
                         setIsModalOpen(true);
                       }}
                     >
-                      <FaEdit className="text-sky-600" size={20} />
+                      <FaEdit className="text-sky-500 hover:text-sky-600 transition cursor-pointer" size={20} />
                     </button>
                     <button
                       className="text-red-500 hover:text-red-700"
