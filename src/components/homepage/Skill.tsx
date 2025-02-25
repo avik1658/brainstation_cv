@@ -53,7 +53,7 @@ interface SkillModalProps {
 }
 
 const formSchema = z.object({
-  skill: z.string().min(1, "Minimum character is 1").max(50, "Maximum character is 15"),
+  skill: z.string().min(1, "Minimum character is 1").max(15, "Maximum character is 15"),
   level: z.number().min(1, "Minimum level is 1").max(10, "Maximum level is 10"),
   priority: z.number().min(1, "Minimum priority is 1").max(100, "Maximum priority is 100"),
 });
