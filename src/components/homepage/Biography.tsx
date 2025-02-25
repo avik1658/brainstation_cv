@@ -168,7 +168,7 @@ function ProfileModal({ profileData, updateProfile, closeModal, getDesignationNa
         </div>
 
         <div className="mt-2">
-          <Label>Tags</Label>
+          <Label>Enthusiast At</Label>
           <div className="flex flex-wrap gap-2 mb-2 max-h-24 overflow-auto">
             {tags.map((tag, index) => (
               <span key={index} className="bg-sky-500 px-2 text-white text-base text-center rounded-lg flex items-center">
