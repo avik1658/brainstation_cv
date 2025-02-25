@@ -53,7 +53,7 @@ interface TrainingModalProps {
 }
 
 const formSchema = z.object({
-  name: z.string().min(1, "Training name is required"),
+  name: z.string().min(3, "Maximum character is 3").max(100, "Maximum character is 100"),
   priority: z.number().min(1, "Minimum priority is 1").max(100, "Maximum priority is 100"),
 });
 

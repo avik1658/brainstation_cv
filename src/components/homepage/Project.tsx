@@ -59,13 +59,13 @@ interface ProjectModalProps {
 }
 
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(3, "Minimum character is 3").max(50, "Maximum character is 50"),
   priority: z.number().min(1, "Minimum priority is 1").max(100, "Maximum priority is 100"),
-  technology: z.string().min(1, "Technology is required"),
-  responsibility: z.string().min(1, "Responsibility is required"),
+  technology: z.string().min(3, "Minimum character is 3").max(50, "Maximum character is 50"),
+  responsibility: z.string().min(3, "Minimum character is 3").max(100, "Maximum character is 50"),
   link: z.string().url("Invalid URL"),
-  duration: z.string().min(1, "Duration is required"),
-  description: z.string().min(1, "Description is required"),
+  duration: z.string().min(1, "Duration is required").max(20, "Maximum character is 15"),
+  description: z.string().min(50, "Minimum character is 50").max(250, "Maximum character is 100"),
 });
 
 

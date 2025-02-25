@@ -38,10 +38,10 @@ interface ExperienceModalProps {
 }
 
 const formSchema = z.object({
-  company_name: z.string().min(1, "Company name is required"),
-  designation: z.string().min(1, "Designation is required"),
-  start: z.string().min(1, "Start date is required"),
-  end: z.string().min(1, "End date is required"),
+  company_name: z.string().min(2, "Minimum character is 2").max(30, "Maximum character is 30"),
+  designation: z.string().min(2, "Minimum character is 2").max(30, "Maximum character is 30"),
+  start: z.string().min(2, "Minimum character is 4").max(20, "Maximum character is 20"),
+  end: z.string().min(2, "Minimum character is 4").max(20, "Maximum character is 20"),
 });
 
 function ExperienceModal({ modalType, experienceData, handleExperience, closeModal }: ExperienceModalProps) {
