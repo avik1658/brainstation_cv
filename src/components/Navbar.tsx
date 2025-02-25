@@ -147,47 +147,42 @@ export default function Navbar() {
             </div>
 
             <div className="flex gap-4">
-                {userType === "admin" && (
-                    <Button variant="outline" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700" onClick={() => window.location.href = "/admin"}>
-                        Admin Page
-                    </Button>
+                {(location.pathname === "/" || location.pathname === "/home" || location.pathname === "/admin-edit") && (
+                    <>
+                        {userType === "admin" && (
+                            <Button
+                                variant="outline"
+                                className="bg-sky-600 text-white hover:text-white hover:bg-sky-700"
+                                onClick={() => (window.location.href = "/admin")}
+                            >
+                                Admin Page
+                            </Button>
+                        )}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
+                                    Download
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="bg-white shadow-lg rounded-lg mt-2 w-48 text-gray-800">
+                                <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">
+                                    Download 3:2
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">
+                                    Download 2:3
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={downloadCV}>
+                                    Download Default
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => setIsDialogOpen(true)}>
+                                    Download Custom
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </>
                 )}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
-                            Download
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white shadow-lg rounded-lg mt-2 w-48 text-gray-800">
-                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">
-                            Download 3:2
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">
-                            Download 2:3
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={downloadCV}>
-                            Download Default
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => setIsDialogOpen(true)}>
-                            Download Custom
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
-                            Profile
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white shadow-lg rounded-lg mt-2 w-48 text-gray-800">
-                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">My Profile</DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">Profile Update</DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => logoutUser()}>Logout</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu> */}
                 <Button variant="outline" className="bg-red-600 text-white hover:text-white hover:bg-red-700" onClick={() => logoutUser()}>
-                        Logout
+                    Logout
                 </Button>
             </div>
 
