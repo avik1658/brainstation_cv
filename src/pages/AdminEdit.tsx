@@ -2,7 +2,7 @@ import Biography from "@/components/homepage/Biography";
 import ExperienceAndEducation from "@/components/homepage/ExperienceAndEducation";
 import Project from "@/components/homepage/Project";
 import Skill from "@/components/homepage/Skill";
-import TraingAndAchievement from "@/components/homepage/TraingAndAchievement";
+import TrainingAndAchievement from "@/components/homepage/TrainingAndAchievement";
 import Navbar from "@/components/Navbar";
 
 export default function AdminEdit() {  
@@ -12,7 +12,7 @@ export default function AdminEdit() {
             <Biography/>
             <Skill/>
             <ExperienceAndEducation/>
-            <TraingAndAchievement/>
+            <TrainingAndAchievement/>
             <Project/>
         </> 
     );
