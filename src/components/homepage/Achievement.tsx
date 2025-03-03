@@ -91,7 +91,7 @@ function AchievementModal({ modalType, achievementData, handleAchievement, close
         </div>
         <div>
           <Label>Priority</Label>
-          <Input {...register("priority", { valueAsNumber: true })} />
+          <Input type="number" {...register("priority", { valueAsNumber: true })} />
           {errors.priority && <p className="text-red-500">{errors.priority.message}</p>}
         </div>
         <DialogFooter>

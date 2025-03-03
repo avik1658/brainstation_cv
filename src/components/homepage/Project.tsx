@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "../ui/textarea";
 import {useAxios}  from "@/axios";
 import { useForm } from "react-hook-form";
@@ -45,7 +52,14 @@ interface ProjectFormData {
   link: string;
   duration: string;
   description: string;
+  specialized_cv : number | null;
 }
+
+interface Specailized {
+  id: number;
+  name: string;
+}
+
 
 interface Project extends ProjectFormData {
   id: number;
@@ -55,7 +69,9 @@ interface ProjectModalProps {
   modalType: string;
   projectData?: Project | null;
   handleProject: (data: ProjectFormData, id?: number) => void;
+  getSpecailizedName: (id:number) => string;
   closeModal: () => void;
+  specailized: Specailized[];
 }
 
 const formSchema = z.object({
@@ -66,22 +82,24 @@ const formSchema = z.object({
   link: z.string().url("Invalid URL"),
   duration: z.string().min(4, "Minimum character is 4").max(20, "Maximum character is 20"),
   description: z.string().min(50, "Minimum character is 50").max(1000, "Maximum character is 1000"),
+  specialized_cv: z.union([z.number(), z.null()]),
 });
 
 
-function ProjectModal({ modalType, projectData, handleProject, closeModal }: ProjectModalProps) {
+function ProjectModal({ modalType, projectData, handleProject,getSpecailizedName, closeModal,specailized }: ProjectModalProps) {
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
     formState: { errors },
   } = useForm<ProjectFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: projectData || { name: "", priority: 1, technology: "", responsibility: "", link: "", duration: "", description: "" },
+    defaultValues: projectData || { name: "", priority: 1, technology: "", responsibility: "", link: "", duration: "", description: "",specialized_cv: null },
   });
 
   useEffect(() => {
-    reset(projectData || { name: "", priority: 1, technology: "", responsibility: "", link: "", duration: "", description: "" });
+    reset(projectData || { name: "", priority: 1, technology: "", responsibility: "", link: "", duration: "", description: "",specialized_cv: null });
   }, [projectData, reset]);
 
   const onSubmit = (data: ProjectFormData) => {
@@ -119,6 +137,35 @@ function ProjectModal({ modalType, projectData, handleProject, closeModal }: Pro
               <Textarea {...register("responsibility")} />
               {errors.responsibility && <p className="text-red-500">{errors.responsibility.message}</p>}
             </div>
+            <div>
+              <Label>Specialization</Label>
+              <Select
+                onValueChange={(value) => setValue("specialized_cv", value === "null" ? null : Number(value))}
+                defaultValue={projectData?.specialized_cv !== null && projectData?.specialized_cv !== undefined 
+                  ? String(projectData.specialized_cv) 
+                  : "null"}
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={
+                      projectData?.specialized_cv != null 
+                        ? getSpecailizedName(projectData.specialized_cv) 
+                        : "Select specialization"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="null">Default</SelectItem>
+                  {specailized.map((element) => (
+                    <SelectItem key={element.id} value={String(element.id)}>
+                      {element.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {errors.specialized_cv && <p className="text-red-500">{errors.specialized_cv.message}</p>}
+            </div>
           </div>
           <div className="mt-2 flex flex-col gap-y-4">
             <div>
@@ -139,6 +186,8 @@ function ProjectModal({ modalType, projectData, handleProject, closeModal }: Pro
           </div>
         </div>
 
+ 
+
         <DialogFooter>
           <Button type="submit" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
             {modalType === "add" ? "Add Project" : "Save Changes"}
@@ -154,6 +203,7 @@ export default function Project() {
   const [modalType, setModalType] = useState<string>("");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [specailized, setSpecailized] = useState<Specailized[]>([]);
   const axiosInstance = useAxios();
   
   const fetchProjects = async () => {
@@ -165,8 +215,19 @@ export default function Project() {
     }
   };
 
+  const fetchSpecailized = async () => {
+    try {
+      const response = await axiosInstance.get<Specailized[]>("/api/v1/specialized-cvs/");
+      setSpecailized(response.data);
+    } catch (error) {
+      console.error("Error fetching Specailized skills", error);
+    }
+  };
+
+
   useEffect(() => {
     fetchProjects();
+    fetchSpecailized();
   }, []);
 
   const handleProject = async (data: ProjectFormData, id?: number) => {
@@ -189,6 +250,10 @@ export default function Project() {
     } catch (error) {
       console.error("Error deleting project:", error);
     }
+  };
+
+  const getSpecailizedName = (id: number): string => {
+    return specailized.find(specailized => specailized.id === id)?.name || "Unknown";
   };
 
   const sensors = useSensors(
@@ -244,6 +309,8 @@ export default function Project() {
             projectData={selectedProject}
             handleProject={handleProject}
             closeModal={() => setIsModalOpen(false)}
+            getSpecailizedName={getSpecailizedName}
+            specailized={specailized}
           />
         </Dialog>
       </div>
@@ -252,49 +319,55 @@ export default function Project() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {projects.map((project: Project) => (
                 <SortableItem key={project.id} id={project.id}>
-                <div key={project.id} className="flex flex-col gap-2 h-[600px] overflow-hidden bg-white p-6 border-l-4 border-red-500 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
-                    <div className="flex justify-between content-center">
-                    <h2 className="text-xl font-semibold text-gray-700">{project.name}</h2>
-                    <div className="flex flex-row gap-2">
-                        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                        <DialogTrigger asChild>
-                            <button
-                            className="text-blue-500 hover:text-blue-700"
-                            onClick={() => {
-                                setModalType("edit");
-                                setSelectedProject(project);
-                                setIsModalOpen(true);
-                            }}
-                            >
-                            <FaEdit className="text-sky-500 hover:text-sky-600 transition cursor-pointer" size={20} />
-                            </button>
-                        </DialogTrigger>
-                        </Dialog>
-                        <button
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => deleteProject(project.id)}
-                        >
-                        <MdDelete size={20} />
-                        </button>
-                    </div>
-                    </div>
-                    <p className="text-gray-600 font-medium mt-2">
-                    <span className="font-bold text-gray-800">Tech Stack : </span> {project.technology}
-                    </p>
-                    <p className="text-gray-600 font-medium">
-                    <span className="font-bold text-gray-800">Responsibilities : </span> {project.responsibility}
-                    </p>
-                    <p className="text-gray-600 font-medium">
-                      <span className="font-bold text-gray-800">Link : </span>
-                      <a href={project.link} className="text-blue-600 hover:underline" target="_blank">
-                        {project.link}
-                      </a>
-                    </p>
-                    <p className="text-gray-600 font-medium">
-                    <span className="font-bold text-gray-800">Duration : </span> {project.duration}
-                    </p>
-                    <p className="text-gray-700 mt-3 leading-relaxed">{project.description}</p>
-                </div>
+                  <div key={project.id} className="flex flex-col gap-2 h-[600px] overflow-hidden bg-white p-6 border-l-4 border-red-500 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
+                      <div className="flex justify-between content-center">
+                        <h2 className="text-xl font-semibold text-gray-700">{project.name}</h2>
+                        <div className="flex flex-row gap-2">
+                              <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                                <DialogTrigger asChild>
+                                    <button
+                                    className="text-blue-500 hover:text-blue-700"
+                                    onClick={() => {
+                                        setModalType("edit");
+                                        setSelectedProject(project);
+                                        setIsModalOpen(true);
+                                    }}
+                                    >
+                                    <FaEdit className="text-sky-500 hover:text-sky-600 transition cursor-pointer" size={20} />
+                                    </button>
+                                </DialogTrigger>
+                              </Dialog>
+                              <button
+                              className="text-red-500 hover:text-red-700"
+                              onClick={() => deleteProject(project.id)}
+                              >
+                              <MdDelete size={20} />
+                              </button>
+                          </div>
+                      </div>
+                      
+                      {project.specialized_cv !== null ?
+                          <p><span className="text-base text-white font-normal bg-blue-600 rounded-lg px-2" >{getSpecailizedName(project.specialized_cv)}</span></p> : 
+                          <p><span className="text-base text-white font-normal bg-green-600 rounded-lg px-2" >Default</span></p>
+                      }
+
+                      <p className="text-gray-600 font-medium mt-2">
+                        <span className="font-bold text-gray-800">Tech Stack : </span> {project.technology}
+                      </p>
+                      <p className="text-gray-600 font-medium">
+                        <span className="font-bold text-gray-800">Responsibilities : </span> {project.responsibility}
+                      </p>
+                      <p className="text-gray-600 font-medium">
+                        <span className="font-bold text-gray-800">Link : </span>
+                        <a href={project.link} className="text-blue-600 hover:underline" target="_blank">
+                          {project.link}
+                        </a>
+                      </p>
+                      <p className="text-gray-600 font-medium">
+                      <span className="font-bold text-gray-800">Duration : </span> {project.duration}
+                      </p>
+                      <p className="text-gray-700 mt-3 leading-relaxed">{project.description}</p>
+                  </div>
                 </SortableItem>
                 ))}
             </div>
