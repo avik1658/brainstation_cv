@@ -14,7 +14,7 @@ import {
     DialogFooter
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { logoutUser } from "@/utils/auth";
 import {useAxios} from "@/axios";
 import {
@@ -31,6 +31,11 @@ interface DropdownProps {
     options: (string | number)[];
     selected: string | number;
     setSelected: (value: string | number) => void;  
+}
+
+interface Specailized {
+  id: number;
+  name: string;
 }
 
 function Dropdown({ label, options, selected, setSelected }: DropdownProps) {
@@ -116,16 +121,37 @@ export default function Navbar() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const axiosInstance = useAxios();
     const userType = localStorage.getItem("role");
+    const [specailized, setSpecailized] = useState<Specailized[]>([]);
 
-    const downloadCV = async () => {
+    const fetchSpecailized = async () => {
         try {
-            const response = await axiosInstance.get("/api/v1/generate-pdf/", {
+        const response = await axiosInstance.get<Specailized[]>("/api/v1/specialized-cvs/");
+        setSpecailized(response.data);
+        } catch (error) {
+        console.error("Error fetching Specailized skills", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchSpecailized();
+    }, []);
+    
+    const downloadCV = async (id?:number) => {
+        console.log("Downloading CV");
+        try {
+            let tempUrl = "/api/v1/generate-pdf/";
+            if (id !== undefined) {
+                tempUrl += `?specialized_cv=${id}`;
+            }
+
+            const response = await axiosInstance.get(tempUrl, {
                 responseType: "blob",
                 timeout: 10000,
                 headers: {
                     'Accept': 'application/pdf',
                 }
             });
+
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
@@ -171,9 +197,14 @@ export default function Navbar() {
                                 <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">
                                     Download 2:3
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={downloadCV}>
+                                <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={()=> downloadCV()}>
                                     Download Default
                                 </DropdownMenuItem>
+                                {specailized.map((item) => (
+                                    <DropdownMenuItem key={item.id} className="hover:bg-gray-100 px-4 py-2" onClick={() => downloadCV(item.id)}>
+                                        Download {item.name}
+                                    </DropdownMenuItem>
+                                ))}
                                 <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => setIsDialogOpen(true)}>
                                     Download Custom
                                 </DropdownMenuItem>

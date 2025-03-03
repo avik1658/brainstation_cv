@@ -18,12 +18,30 @@ import {useAxios} from "@/axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  KeyboardSensor,
+  DragEndEvent
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import SortableItem from "./SortableItem";
+
 
 interface ExperienceFormData {
   company_name: string;
   designation: string;
   start: string;
   end: string;
+  priority: number;
 }
 
 interface Experience extends ExperienceFormData {
@@ -42,6 +60,7 @@ const formSchema = z.object({
   designation: z.string().min(2, "Minimum character is 2").max(30, "Maximum character is 30"),
   start: z.string().min(4, "Minimum character is 4").max(20, "Maximum character is 20"),
   end: z.string().min(4, "Minimum character is 4").max(20, "Maximum character is 20"),
+  priority: z.number().min(1, "Minimum priority is 1").max(100, "Maximum priority is 100"),
 });
 
 function ExperienceModal({ modalType, experienceData, handleExperience, closeModal }: ExperienceModalProps) {
@@ -52,11 +71,11 @@ function ExperienceModal({ modalType, experienceData, handleExperience, closeMod
     formState: { errors },
   } = useForm<ExperienceFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: experienceData || { company_name: "", designation: "", start: "", end: "" },
+    defaultValues: experienceData || { company_name: "", designation: "", start: "", end: "", priority:1 },
   });
 
   useEffect(() => {
-    reset(experienceData || { company_name: "", designation: "", start: "", end: "" });
+    reset(experienceData || { company_name: "", designation: "", start: "", end: "", priority:1 });
   }, [experienceData, reset]);
 
 
@@ -93,6 +112,12 @@ function ExperienceModal({ modalType, experienceData, handleExperience, closeMod
           <Input {...register("end")} />
           {errors.end && <p className="text-red-500">{errors.end.message}</p>}
         </div>
+        <div>
+          <Label>Priority</Label>
+          <Input {...register("priority", { valueAsNumber: true })} />
+          {errors.priority && <p className="text-red-500">{errors.priority.message}</p>}
+        </div>
+
         <DialogFooter>
           <Button type="submit"className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
             {modalType === "add" ? "Add Experience" : "Save Changes"}</Button>
@@ -144,6 +169,38 @@ export default function Experience() {
     }
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+  
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setExperiences((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        const newItems = arrayMove(items, oldIndex, newIndex);
+
+        Promise.all(
+          newItems.map((item, index) =>
+            axiosInstance.put(`/api/v1/experiences/${item.id}/`, { ...item, priority: index + 1 })
+          )
+        ).then(fetchExperiences);
+
+        return newItems;
+      });
+    }
+  };
+
+
   return (
     <div className="bg-gray-100 rounded-2xl w-full max-w-4xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -166,36 +223,43 @@ export default function Experience() {
           />
         </Dialog>
       </div>
-      <div className="grid grid-cols-1 gap-6">
-        {experiences.map((exp) => (
-          <div key={exp.id} className="bg-white rounded-xl shadow-md p-5 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-300 flex flex-col min-h-[120px]">
-            <div className="flex justify-between content-center">
-              <h2 className="text-xl font-semibold text-gray-700">{exp.designation}</h2>
-              <div className="flex flex-row gap-2">
-                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                  <DialogTrigger asChild>
-                    <button 
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => {
-                        setModalType("edit");
-                        setSelectedExperience(exp);
-                        setIsModalOpen(true);
-                      }}
-                    >
-                      <FaEdit className="text-sky-500 hover:text-sky-600 transition cursor-pointer" size={20} />
-                    </button>
-                  </DialogTrigger>
-                </Dialog>
-                <button className="text-red-500 hover:text-red-700" onClick={() => deleteExperience(exp.id)}>
-                  <MdDelete size={20} />
-                </button>
-              </div>
-            </div>
-            <h3 className="text-xl text-gray-500">{exp.company_name}</h3>
-            <h4 className="text-sm text-gray-400 mt-auto">{exp.start} - {exp.end}</h4>
+
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={experiences} strategy={verticalListSortingStrategy}>
+        <div className="grid grid-cols-1 gap-6">
+            {experiences.map((exp) => (
+              <SortableItem key={exp.id} id={exp.id}>
+                <div key={exp.id} className="bg-white rounded-xl shadow-md p-5 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-300 flex flex-col min-h-[120px]">
+                  <div className="flex justify-between content-center">
+                    <h2 className="text-xl font-semibold text-gray-700">{exp.designation}</h2>
+                    <div className="flex flex-row gap-2">
+                      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                        <DialogTrigger asChild>
+                          <button 
+                            className="text-blue-500 hover:text-blue-700"
+                            onClick={() => {
+                              setModalType("edit");
+                              setSelectedExperience(exp);
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            <FaEdit className="text-sky-500 hover:text-sky-600 transition cursor-pointer" size={20} />
+                          </button>
+                        </DialogTrigger>
+                      </Dialog>
+                      <button className="text-red-500 hover:text-red-700" onClick={() => deleteExperience(exp.id)}>
+                        <MdDelete size={20} />
+                      </button>
+                    </div>
+                  </div>
+                  <h3 className="text-xl text-gray-500">{exp.company_name}</h3>
+                  <h4 className="text-sm text-gray-400 mt-auto">{exp.start} - {exp.end}</h4>
+                </div>
+              </SortableItem>
+            ))}
           </div>
-        ))}
-      </div>
+        </SortableContext>
+      </DndContext>
     </div>
   );
 }

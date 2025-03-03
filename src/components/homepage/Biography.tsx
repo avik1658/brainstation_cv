@@ -319,7 +319,7 @@ export default function Biography() {
         <Dialog open={isProfilePicModalOpen} onOpenChange={setIsProfilePicModalOpen}>
           <DialogTrigger asChild>
             <img
-              src={`http://localhost:8000/${profilePicture}`}
+              src={`http://172.16.230.59:8080/${profilePicture}`}
               alt="profile"
               className="w-32 h-32 rounded-full border-4 border-blue-500 shadow-md cursor-pointer hover:brightness-50 transition"
             />

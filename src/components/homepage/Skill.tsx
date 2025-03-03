@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {useAxios}  from "@/axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +46,12 @@ interface SkillFormData {
   skill: string;
   level: number;
   priority: number;
+  specialized_cv : number | null;
+}
+
+interface Specailized {
+  id: number;
+  name: string;
 }
 
 interface Skill extends SkillFormData {
@@ -49,28 +62,32 @@ interface SkillModalProps {
   modalType: string;
   skillData?: Skill | null;
   handleSkill: (data: SkillFormData, id?: number) => void;
+  getSpecailizedName: (id:number) => string;
   closeModal: () => void;
+  specailized: Specailized[];
 }
 
 const formSchema = z.object({
   skill: z.string().min(1, "Minimum character is 1").max(15, "Maximum character is 15"),
   level: z.number().min(1, "Minimum level is 1").max(10, "Maximum level is 10"),
   priority: z.number().min(1, "Minimum priority is 1").max(100, "Maximum priority is 100"),
+  specialized_cv: z.union([z.number(), z.null()]),
 });
 
-function SkillModal({ modalType, skillData, handleSkill, closeModal }: SkillModalProps) {
+function SkillModal({ modalType, skillData, handleSkill, getSpecailizedName, closeModal, specailized}: SkillModalProps) {
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
     formState: { errors },
   } = useForm<SkillFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: skillData || { skill: "", level: 1, priority: 1 },
+    defaultValues: skillData || { skill: "", level: 1, priority: 1, specialized_cv: null },
   });
 
   useEffect(() => {
-    reset(skillData || { skill: "", level: 1, priority: 1 });
+    reset(skillData || { skill: "", level: 1, priority: 1, specialized_cv: null });
   }, [skillData, reset]);
 
   const onSubmit = (data: SkillFormData) => {
@@ -101,6 +118,37 @@ function SkillModal({ modalType, skillData, handleSkill, closeModal }: SkillModa
           <Input type="number" {...register("priority", { valueAsNumber: true })} />
           {errors.priority && <p className="text-red-500">{errors.priority.message}</p>}
         </div>
+
+        <div>
+            <Label>Specialization</Label>
+            <Select
+              onValueChange={(value) => setValue("specialized_cv", value === "null" ? null : Number(value))}
+              defaultValue={skillData?.specialized_cv !== null && skillData?.specialized_cv !== undefined 
+                ? String(skillData.specialized_cv) 
+                : "null"}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={
+                    skillData?.specialized_cv != null 
+                      ? getSpecailizedName(skillData.specialized_cv) 
+                      : "Select specialization"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="null">Default</SelectItem>
+                {specailized.map((element) => (
+                  <SelectItem key={element.id} value={String(element.id)}>
+                    {element.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {errors.specialized_cv && <p className="text-red-500">{errors.specialized_cv.message}</p>}
+        </div>
+
         <DialogFooter>
           <Button type="submit" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
             {modalType === "add" ? "Add Skill" : "Save Changes"}
@@ -116,6 +164,7 @@ export default function Skill() {
   const [modalType, setModalType] = useState<string>("");
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [specailized, setSpecailized] = useState<Specailized[]>([]);
   const axiosInstance = useAxios();
 
   const fetchSkills = async () => {
@@ -127,8 +176,18 @@ export default function Skill() {
     }
   };
 
+  const fetchSpecailized = async () => {
+    try {
+      const response = await axiosInstance.get<Specailized[]>("/api/v1/specialized-cvs/");
+      setSpecailized(response.data);
+    } catch (error) {
+      console.error("Error fetching Specailized skills", error);
+    }
+  };
+
   useEffect(() => {
     fetchSkills();
+    fetchSpecailized();
   }, []);
 
   const handleSkill = async (data: SkillFormData, id?: number) => {
@@ -152,6 +211,11 @@ export default function Skill() {
       console.error("Error deleting skill:", error);
     }
   };
+
+  const getSpecailizedName = (id: number): string => {
+    return specailized.find(specailized => specailized.id === id)?.name || "Unknown";
+  };
+
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -205,6 +269,8 @@ export default function Skill() {
             skillData={selectedSkill}
             handleSkill={handleSkill}
             closeModal={() => setIsModalOpen(false)}
+            getSpecailizedName={getSpecailizedName}
+            specailized={specailized}
           />
         </Dialog>
       </div>
@@ -243,6 +309,10 @@ export default function Skill() {
                       </button>
                     </div>
                   </div>
+                  {skill.specialized_cv !== null ?
+                      <p><span className="text-base text-white font-normal bg-blue-600 rounded-lg px-2" >{getSpecailizedName(skill.specialized_cv)}</span></p> : 
+                      <p><span className="text-base text-white font-normal bg-green-600 rounded-lg px-2" >Default</span></p>
+                  }
                   <div className="w-full bg-gray-300 h-4 rounded-full mt-2">
                     <div
                       className="bg-sky-600 h-4 rounded-full transition-all duration-500"

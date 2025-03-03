@@ -207,7 +207,7 @@ export default function Employee() {
               <TableCell className="text-center">
                 <div className="flex justify-start">
                   <img
-                    src={`http://localhost:8000/${employee.profile_picture}`}
+                    src={`http://172.16.230.59:8080/${employee.profile_picture}`}
                     alt="profile"
                     className="w-12 h-12 rounded-full"
                   />

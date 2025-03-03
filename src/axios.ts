@@ -9,12 +9,12 @@ const useAxios = () => {
 
 
 const axiosInstance1 = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "http://172.16.230.59:8080",
   timeout: 1000,
 });
 
 const axiosInstance2 = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "http://172.16.230.59:8080",
   timeout: 1000,
 });
 
