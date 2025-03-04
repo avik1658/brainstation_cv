@@ -176,10 +176,10 @@ function EducationModal({
                   {selectedDegree ? getDegreeName(selectedDegree) : "Select degree"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="align-start w-96 h-52 p-0" onWheel={(e) => e.stopPropagation()} >
+              <PopoverContent className="align-start w-96 p-0" onWheel={(e) => e.stopPropagation()} >
                 <Command>
                   <CommandInput placeholder="Search degree..." />
-                  <CommandList>
+                  <CommandList className="max-h-48">
                     {degrees.map((degree) => (
                       <CommandItem
                         key={degree.id}
@@ -203,10 +203,10 @@ function EducationModal({
                   {selectedDepartment ? getDepartmentName(selectedDepartment) : "Select department"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="align-start w-96 h-52 p-0" onWheel={(e) => e.stopPropagation()} >
+              <PopoverContent className="align-start w-96 p-0" onWheel={(e) => e.stopPropagation()} >
                 <Command>
                   <CommandInput placeholder="Search department..." />
-                  <CommandList>
+                  <CommandList className="max-h-48">
                     {departments.map((department) => (
                       <CommandItem
                         key={department.id}
@@ -230,10 +230,10 @@ function EducationModal({
                   {selectedUniversity ? getUniversityName(selectedUniversity) : "Select university"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="align-start w-96 h-52 p-0" onWheel={(e) => e.stopPropagation()} >
+              <PopoverContent className="align-start w-96 p-0" onWheel={(e) => e.stopPropagation()} >
                 <Command>
                   <CommandInput placeholder="Search university..." />
-                  <CommandList>
+                  <CommandList className="max-h-48">
                     {universities.map((university) => (
                       <CommandItem
                         key={university.id}

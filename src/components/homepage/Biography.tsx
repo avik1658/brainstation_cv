@@ -18,12 +18,16 @@ import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Command,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 
 
 interface Profile {
@@ -69,7 +73,9 @@ function ProfileModal({ profileData, updateProfile, closeModal, getDesignationNa
     handleSubmit,
     reset,
     setValue,
+    trigger,
     formState: { errors },
+    watch,
   } = useForm<Profile>({
     resolver: zodResolver(formSchema),
     defaultValues: profileData || {
@@ -93,6 +99,26 @@ function ProfileModal({ profileData, updateProfile, closeModal, getDesignationNa
   useEffect(() => {
     setTags(profileData?.tags || []);
   }, [closeModal]);
+
+  const [openDesignation, setOpenDesignation] = useState(false);
+  const [openSbu, setOpenSbu] = useState(false);
+
+  const handleSelectDesignation = (designationId: number) => {
+    setValue("designation", designationId);
+    trigger("designation"); 
+    setOpenDesignation(false);
+  };
+
+  const handleSelectSbu = (sbuId: number) => {
+    setValue("sub_project", sbuId);
+    trigger("sub_project"); 
+    setOpenSbu(false);
+  };
+
+  const selectedDesignation = watch("designation");
+  const selectedSbu = watch("sub_project");
+
+
 
   const [tags, setTags] = useState<string[]>(profileData?.tags || []);
   const tagInputRef = useRef<HTMLInputElement>(null);
@@ -129,36 +155,58 @@ function ProfileModal({ profileData, updateProfile, closeModal, getDesignationNa
           {errors.name && <p className="text-red-500">{errors.name.message}</p>}
         </div>
 
-        <div className="mt-2">
-          <Label>Designation</Label>
-          <Select onValueChange={(value) => setValue("designation", Number(value))}>
-            <SelectTrigger>
-              <SelectValue placeholder={profileData ? getDesignationName(profileData.designation) : "Select Designation"} />
-            </SelectTrigger>
-            <SelectContent>
-              {designation.map((des) => (
-                <SelectItem key={des.id} value={String(des.id)}>
-                  {des.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Designation</label>
+          <Popover open={openDesignation} onOpenChange={setOpenDesignation}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="font-normal w-full justify-between">
+                {selectedDesignation ? getDesignationName(selectedDesignation) : "Select designation"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="align-start w-96 p-0" onWheel={(e) => e.stopPropagation()} >
+              <Command>
+                <CommandInput placeholder="Search designation..." />
+                <CommandList className="max-h-48">
+                  {designation.map((des) => (
+                    <CommandItem
+                      key={des.id}
+                      onSelect={() => handleSelectDesignation(des.id)}
+                    >
+                      {des.name}
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          {errors.designation && <p className="text-red-500">{errors.designation.message}</p>}
         </div>
 
-        <div className="mt-2">
-          <Label>SBU</Label>
-          <Select onValueChange={(value) => setValue("sub_project", Number(value))}>
-            <SelectTrigger>
-              <SelectValue placeholder={profileData ? getSbuName(profileData.sub_project) : "Select SBU"} />
-            </SelectTrigger>
-            <SelectContent>
-              {sbu.map((s) => (
-                <SelectItem key={s.id} value={String(s.id)}>
-                  {s.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Sbu</label>
+          <Popover open={openSbu} onOpenChange={setOpenSbu}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="font-normal w-full justify-between">
+                {selectedSbu ? getSbuName(selectedSbu) : "Select sbu"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="align-start w-96 p-0" onWheel={(e) => e.stopPropagation()} >
+              <Command>
+                <CommandInput placeholder="Search sbu..." />
+                <CommandList className="max-h-48">
+                  {sbu.map((sb) => (
+                    <CommandItem
+                      key={sb.id}
+                      onSelect={() => handleSelectSbu(sb.id)}
+                    >
+                      {sb.name}
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          {errors.sub_project && <p className="text-red-500">{errors.sub_project.message}</p>}
         </div>
 
         <div className="mt-2">
