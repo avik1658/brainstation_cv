@@ -57,6 +57,7 @@ export const logoutUser = async () => {
   
   localStorage.removeItem("localAccessToken");
   localStorage.removeItem("localRefreshToken");
+  localStorage.removeItem("editAccessToken");
   localStorage.removeItem("role");
 
   // Redirect to home page after a short delay

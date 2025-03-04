@@ -16,12 +16,16 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Command,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -112,15 +116,43 @@ function EducationModal({
     handleSubmit,
     reset,
     setValue,
+    trigger,
     formState: { errors },
+    watch,
   } = useForm<EducationFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: educationData || { passing_year: 0, priority: 1, degree: 0, university: 0, department: 0 },
+    defaultValues: educationData || { passing_year: 1990, priority: 1, degree: 0, university: 0, department: 0 },
   });
 
   useEffect(() => {
-    reset(educationData || { passing_year: 0, priority: 1, degree: 0, university: 0, department: 0 });
+    reset(educationData || { passing_year: 1990, priority: 1, degree: 0, university: 0, department: 0 });
   }, [educationData, reset]);
+
+  const [openDegree, setOpenDegree] = useState(false);
+  const [openDepartment, setOpenDepartment] = useState(false);
+  const [openUniversity, setOpenUniversity] = useState(false);
+
+  const handleSelectDegree = (degreeId: number) => {
+    setValue("degree", degreeId);
+    trigger("degree"); 
+    setOpenDegree(false);
+  };
+
+  const handleSelectDepartment = (departmentId: number) => {
+    setValue("department", departmentId);
+    trigger("department"); 
+    setOpenDepartment(false);
+  };
+
+  const handleSelectUniversity = (universityId: number) => {
+    setValue("university", universityId);
+    trigger("university"); 
+    setOpenUniversity(false);
+  };
+
+  const selectedDegree = watch("degree");
+  const selectedDepartment = watch("department");
+  const selectedUniversity = watch("university");
 
   const onSubmit = (data: EducationFormData) => {
     handleEducation(data, educationData?.id);
@@ -128,9 +160,8 @@ function EducationModal({
     closeModal();
   };
 
-
- return (
-    <DialogContent className="max-w-xl ">
+  return (
+    <DialogContent className="max-w-xl">
       <DialogHeader>
         <DialogTitle>{modalType === "add" ? "Add Education" : "Edit Education"}</DialogTitle>
         <DialogDescription />
@@ -138,78 +169,104 @@ function EducationModal({
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mt-2 flex flex-col gap-y-4">
           <div>
-            <Label>Degree</Label>
-            <Select
-              onValueChange={(value) => setValue("degree", Number(value))}
-              defaultValue={educationData ? String(educationData.degree) : ""}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={educationData ? getDegreeName(educationData.degree) : "Select degree"} />
-              </SelectTrigger>
-              <SelectContent>
-                {degrees.map((degree) => (
-                  <SelectItem key={degree.id} value={String(degree.id)}>
-                    {degree.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
+            <label className="block text-sm font-medium text-gray-700">Degree</label>
+            <Popover open={openDegree} onOpenChange={setOpenDegree}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="font-normal w-full justify-between">
+                  {selectedDegree ? getDegreeName(selectedDegree) : "Select degree"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="align-start w-96 h-52 p-0" onWheel={(e) => e.stopPropagation()} >
+                <Command>
+                  <CommandInput placeholder="Search degree..." />
+                  <CommandList>
+                    {degrees.map((degree) => (
+                      <CommandItem
+                        key={degree.id}
+                        onSelect={() => handleSelectDegree(degree.id)}
+                      >
+                        {degree.name}
+                      </CommandItem>
+                    ))}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
             {errors.degree && <p className="text-red-500">{errors.degree.message}</p>}
           </div>
-          <div>
-            <Label>Department</Label>
-            <Select
-              onValueChange={(value) => setValue("department", Number(value))}
-              defaultValue={educationData ? String(educationData.department) : ""}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={educationData ? getDepartmentName(educationData.department) : "Select department"} />
-              </SelectTrigger>
-              <SelectContent>
-                {departments.map((department) => (
-                  <SelectItem key={department.id} value={String(department.id)}>
-                    {department.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Department</label>
+            <Popover open={openDepartment} onOpenChange={setOpenDepartment}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="font-normal w-full justify-between">
+                  {selectedDepartment ? getDepartmentName(selectedDepartment) : "Select department"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="align-start w-96 h-52 p-0" onWheel={(e) => e.stopPropagation()} >
+                <Command>
+                  <CommandInput placeholder="Search department..." />
+                  <CommandList>
+                    {departments.map((department) => (
+                      <CommandItem
+                        key={department.id}
+                        onSelect={() => handleSelectDepartment(department.id)}
+                      >
+                        {department.name}
+                      </CommandItem>
+                    ))}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
             {errors.department && <p className="text-red-500">{errors.department.message}</p>}
           </div>
+
           <div>
-            <Label>Passing Year</Label>
-            <Input type="number" {...register("passing_year",{ valueAsNumber: true })} />
-            {errors.passing_year && <p className="text-red-500">{errors.passing_year.message}</p>}
-          </div>
-          <div>
-            <Label>University/Institute</Label>
-            <Select
-              onValueChange={(value) => setValue("university", Number(value))}
-              defaultValue={educationData ? String(educationData.university) : ""}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={educationData ? getUniversityName(educationData.university) : "Select university"} />
-              </SelectTrigger>
-              <SelectContent>
-                {universities.map((university) => (
-                  <SelectItem key={university.id} value={String(university.id)}>
-                    {university.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <label className="block text-sm font-medium text-gray-700">University</label>
+            <Popover open={openUniversity} onOpenChange={setOpenUniversity}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="font-normal w-full justify-between">
+                  {selectedUniversity ? getUniversityName(selectedUniversity) : "Select university"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="align-start w-96 h-52 p-0" onWheel={(e) => e.stopPropagation()} >
+                <Command>
+                  <CommandInput placeholder="Search university..." />
+                  <CommandList>
+                    {universities.map((university) => (
+                      <CommandItem
+                        key={university.id}
+                        onSelect={() => handleSelectUniversity(university.id)}
+                      >
+                        {university.name}
+                      </CommandItem>
+                    ))}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
             {errors.university && <p className="text-red-500">{errors.university.message}</p>}
           </div>
+
+          <div>
+            <Label>Passing Year</Label>
+            <Input type="number" {...register("passing_year", { valueAsNumber: true })} />
+            {errors.passing_year && <p className="text-red-500">{errors.passing_year.message}</p>}
+          </div>
+
           <div>
             <Label>Priority</Label>
-            <Input type="number" {...register("priority",{ valueAsNumber: true })} />
+            <Input type="number" {...register("priority", { valueAsNumber: true })} />
             {errors.priority && <p className="text-red-500">{errors.priority.message}</p>}
           </div>
         </div>
+
         <div className="mt-4">
           <DialogFooter>
-            <Button type="submit" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">{modalType === "add" ? "Add Education" : "Save Changes"}</Button>
+            <Button type="submit" className="bg-sky-600 text-white hover:text-white hover:bg-sky-700">
+              {modalType === "add" ? "Add Education" : "Save Changes"}
+            </Button>
           </DialogFooter>
         </div>
       </form>
