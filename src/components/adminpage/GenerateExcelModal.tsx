@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle,DialogDescription } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAxios } from "@/axios";
-
+import  { AxiosError } from 'axios';
 
 interface GenerateExcelModalProps {
   isOpen: boolean;
@@ -31,7 +31,7 @@ export default function GenerateExcelModal({ isOpen, onClose, selectedIds }: Gen
     training: false,
     updated_date: false,
   });
-
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const axiosInstance = useAxios();
 
 
@@ -72,8 +72,14 @@ export default function GenerateExcelModal({ isOpen, onClose, selectedIds }: Gen
       document.body.appendChild(link);
       link.click();
       link.remove();
+      setErrorMsg(null);
     } catch (error) {
-      console.error("Error generating Excel report:", error);
+    const err = error as AxiosError
+      if (!err?.response) {
+          setErrorMsg("No Server Response");
+      } else {
+          setErrorMsg("Download Failed");
+      }  
     }
   };
 
@@ -100,6 +106,7 @@ export default function GenerateExcelModal({ isOpen, onClose, selectedIds }: Gen
         </div>
         <p className="text-sm mt-2">Selected Employees: {selectedIds.length}</p>
         {selectedIds.length===0 && <p className="text-sm text-red-600">Please select employees to generate report</p>}
+        {errorMsg && <p className="text-sm text-red-600">{errorMsg}</p>}
         <div className="flex justify-end gap-2">
           <Button className="bg-red-600 hover:bg-red-700 transition" onClick={onClose}>
             Cancel

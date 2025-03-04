@@ -36,6 +36,11 @@ axiosInstance1.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+//Always show fresh data
+axiosInstance1.defaults.headers.get['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+axiosInstance1.defaults.headers.get['Pragma'] = 'no-cache';
+axiosInstance1.defaults.headers.get['Expires'] = '0';
+
 // Request Interceptor: Attach token to requests
 axiosInstance2.interceptors.request.use(
   (config) => {

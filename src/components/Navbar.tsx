@@ -166,7 +166,7 @@ export default function Navbar() {
 
 
     return (
-        <nav className="bg-indigo-950 text-white px-6 py-4 shadow-md flex flex-col gap-y-4 md:flex-row justify-between items-center">
+        <nav className="bg-indigo-950 text-white px-6 py-4 shadow-md flex flex-col gap-y-4 md:flex-row justify-between items-center sticky top-0 z-50">
             <div className="flex gap-4 items-center">
                 <img src="/brain.png" alt="brainstation" className="w-12 h-12 rounded-full" />
                 <p className="text-3xl font-bold text-sky-600">BrainStation23</p>
