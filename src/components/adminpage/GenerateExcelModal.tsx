@@ -4,6 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle,DialogDescription } fr
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAxios } from "@/axios";
 import  { AxiosError } from 'axios';
+import { toast } from "sonner";
+import { ToastMessage } from "@/utils/ToastMessage";
 
 interface GenerateExcelModalProps {
   isOpen: boolean;
@@ -31,7 +33,6 @@ export default function GenerateExcelModal({ isOpen, onClose, selectedIds }: Gen
     training: false,
     updated_date: false,
   });
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const axiosInstance = useAxios();
 
 
@@ -45,6 +46,7 @@ export default function GenerateExcelModal({ isOpen, onClose, selectedIds }: Gen
   const handleGenerateReport = async () => {
     if (selectedIds.length === 0) {
       console.log("No employees selected!");
+      toast.warning("Please select employees to generate report");
       return;
     }
 
@@ -72,14 +74,11 @@ export default function GenerateExcelModal({ isOpen, onClose, selectedIds }: Gen
       document.body.appendChild(link);
       link.click();
       link.remove();
-      setErrorMsg(null);
+      toast.success("Excel downloaded successfully")
     } catch (error) {
-    const err = error as AxiosError
-      if (!err?.response) {
-          setErrorMsg("No Server Response");
-      } else {
-          setErrorMsg("Download Failed");
-      }  
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Excel Generation", err.response?.status || 500);
     }
   };
 
@@ -105,8 +104,6 @@ export default function GenerateExcelModal({ isOpen, onClose, selectedIds }: Gen
           ))}
         </div>
         <p className="text-sm mt-2">Selected Employees: {selectedIds.length}</p>
-        {selectedIds.length===0 && <p className="text-sm text-red-600">Please select employees to generate report</p>}
-        {errorMsg && <p className="text-sm text-red-600">{errorMsg}</p>}
         <div className="flex justify-end gap-2">
           <Button className="bg-red-600 hover:bg-red-700 transition" onClick={onClose}>
             Cancel

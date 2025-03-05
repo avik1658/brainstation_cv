@@ -41,6 +41,8 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import SortableItem from "./SortableItem";
+import { AxiosError } from "axios";
+import { ToastMessage } from "@/utils/ToastMessage";
 
 interface SkillFormData {
   skill: string;
@@ -172,7 +174,14 @@ export default function Skill() {
       const response = await axiosInstance.get<Skill[]>("/api/v1/technical-skills/");
       setSkills(response.data);
     } catch (error) {
-      console.error("Error fetching skills:", error);
+      const err = error as AxiosError;
+      if (err.response?.status === 404) {
+        setSkills([]);
+        ToastMessage("Skill", err.response?.status || 500);
+      } else {
+        console.error(err);
+        ToastMessage("Skill", err.response?.status || 500);
+      }
     }
   };
 
@@ -181,7 +190,8 @@ export default function Skill() {
       const response = await axiosInstance.get<Specailized[]>("/api/v1/specialized-cvs/");
       setSpecailized(response.data);
     } catch (error) {
-      console.error("Error fetching Specailized skills", error);
+      const err = error as AxiosError;
+      ToastMessage("Specailized", err.response?.status || 500);
     }
   };
 
@@ -192,23 +202,28 @@ export default function Skill() {
 
   const handleSkill = async (data: SkillFormData, id?: number) => {
     try {
-      if (id) {
-        await axiosInstance.put(`/api/v1/technical-skills/${id}/`, data);
-      } else {
-        await axiosInstance.post("/api/v1/technical-skills/", data);
-      }
+      const response = id
+        ? await axiosInstance.put(`/api/v1/technical-skills/${id}/`, data)
+        : await axiosInstance.post("/api/v1/technical-skills/", data);
+      
       fetchSkills();
+      ToastMessage("Skill", response.status || 500);
     } catch (error) {
-      console.error("Error saving skill:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Skill", err.response?.status || 500);
     }
   };
 
   const deleteSkill = async (id: number) => {
     try {
-      await axiosInstance.delete(`/api/v1/technical-skills/${id}/`);
+      const response = await axiosInstance.delete(`/api/v1/technical-skills/${id}/`);
       fetchSkills();
+      ToastMessage("Skill", response.status || 500);
     } catch (error) {
-      console.error("Error deleting skill:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Skill", err.response?.status || 500);
     }
   };
 

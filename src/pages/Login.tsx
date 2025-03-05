@@ -56,11 +56,11 @@ export default function Login() {
       toast.success("Login successful");
       navigate("/home");
     } catch (error) {
-    const err = error as AxiosError<{detail: string}>
+    const err = error as AxiosError
       if (err.response?.status === 401) {
-          toast.error(err?.response?.data?.detail);
+          toast.error("Wrong username or password");
       } else {
-          toast.error(err.message);
+          toast.error(err.message || "An error occurred");
       }  
     }
   };

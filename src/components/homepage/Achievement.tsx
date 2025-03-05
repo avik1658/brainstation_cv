@@ -34,6 +34,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import SortableItem from "./SortableItem";
+import { AxiosError } from "axios";
+import { ToastMessage } from "@/utils/ToastMessage";
 
 interface AchievementFormData {
   name: string;
@@ -116,7 +118,14 @@ export default function Achievement() {
       const response = await axiosInstance.get<Achievement[]>("/api/v1/achievements/");
       setAchievements(response.data);
     } catch (error) {
-      console.error("Error fetching achievements:", error);
+      const err = error as AxiosError;
+      if (err.response?.status === 404) {
+        setAchievements([]);
+        ToastMessage("Achievement", err.response?.status || 500);
+      } else {
+        console.error(err);
+        ToastMessage("Achievement", err.response?.status || 500);
+      }
     }
   };
 
@@ -126,23 +135,29 @@ export default function Achievement() {
 
   const handleAchievement = async (data: AchievementFormData, id?: number) => {
     try {
-      if (id) {
-        await axiosInstance.put(`/api/v1/achievements/${id}/`, data);
-      } else {
-        await axiosInstance.post("/api/v1/achievements/", data);
-      }
+      const response = id
+        ? await axiosInstance.put(`/api/v1/achievements/${id}/`, data)
+        : await axiosInstance.post("/api/v1/achievements/", data);
+
       fetchAchievements();
+      ToastMessage("Achievement", response.status || 500);
     } catch (error) {
-      console.error("Error saving achievement:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Achievement", err.response?.status || 500);
     }
   };
 
+
   const deleteAchievement = async (id: number) => {
     try {
-      await axiosInstance.delete(`/api/v1/achievements/${id}/`);
+      const response = await axiosInstance.delete(`/api/v1/achievements/${id}/`);
       fetchAchievements();
+      ToastMessage("Training", response.status || 500);
     } catch (error) {
-      console.error("Error deleting achievement:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Achievement", err.response?.status || 500);
     }
   };
 

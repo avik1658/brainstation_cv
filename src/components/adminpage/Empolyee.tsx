@@ -25,6 +25,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import GenerateExcelModal from "./GenerateExcelModal";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+import { ToastMessage } from "@/utils/ToastMessage";
 
 interface Employee {
   id: number;
@@ -70,7 +73,9 @@ export default function Employee() {
       setSelectedEmployees([]);
       setSelectAll(false);
     } catch (error) {
-      console.error("Error fetching employees:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Employee", err.response?.status || 500);
     }
   };
 
@@ -81,9 +86,11 @@ export default function Employee() {
       console.log(`Edit Access Token: ${response.data.access}`);
       navigate("/admin-edit");
     } catch (error) {
-      console.error("Error getting token:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Employee", err.response?.status || 500);
     }
-  }
+  };
 
 
   const fetchDesignation = async () => {
@@ -91,7 +98,9 @@ export default function Employee() {
       const response = await axiosInstance.get<Designation[]>(`/api/v1/designations/`);
       setDesignation(response.data);
     } catch (error) {
-      console.error("Error fetching designation:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Designation", err.response?.status || 500);
     }
   };
 
@@ -109,11 +118,14 @@ export default function Employee() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      toast.success("CV downloaded successfully");
     } catch (error) {
-      console.error("Error downloading CV:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("CV", err.response?.status || 500);
     }
   };
-
+  
   const downloadSelectedCVs = async () => {
     for (const emp of selectedEmployees) {
         await downloadCV(emp.id, emp.bs_id);

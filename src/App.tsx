@@ -29,7 +29,7 @@ function App() {
         <Route path="/admin" element={<PrivateRoute allowedRoles={["admin"]}><Admin /></PrivateRoute>} />
         <Route path="/admin-edit" element={<PrivateRoute allowedRoles={["admin"]}><AdminEdit /></PrivateRoute>} />
       </Routes>
-      <Toaster richColors visibleToasts={3} toastOptions={{ duration: 1000 }} />
+      <Toaster richColors visibleToasts={9} toastOptions={{ duration: 1000 }} />
     </>
   );
 }

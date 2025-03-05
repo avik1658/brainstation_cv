@@ -34,6 +34,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import SortableItem from "./SortableItem";
+import { AxiosError } from "axios";
+import { ToastMessage } from "@/utils/ToastMessage";
 
 
 interface TrainingFormData {
@@ -118,7 +120,14 @@ export default function Training() {
       const response = await axiosInstance.get<Training[]>("/api/v1/trainings/");
       setTrainings(response.data);
     } catch (error) {
-      console.error("Error fetching trainings:", error);
+      const err = error as AxiosError;
+      if (err.response?.status === 404) {
+        setTrainings([]);
+        ToastMessage("Training", err.response?.status || 500);
+      } else {
+        console.error(err);
+        ToastMessage("Training", err.response?.status || 500);
+      }
     }
   };
 
@@ -128,23 +137,29 @@ export default function Training() {
 
   const handleTraining = async (data: TrainingFormData, id?: number) => {
     try {
-      if (id) {
-        await axiosInstance.put(`/api/v1/trainings/${id}/`, data);
-      } else {
-        await axiosInstance.post("/api/v1/trainings/", data);
-      }
+      const response = id
+        ? await axiosInstance.put(`/api/v1/trainings/${id}/`, data)
+        : await axiosInstance.post("/api/v1/trainings/", data);
+
       fetchTrainings();
+      ToastMessage("Training", response.status || 500);
     } catch (error) {
-      console.error("Error saving training:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Training", err.response?.status || 500);
     }
   };
 
+
   const deleteTraining = async (id: number) => {
     try {
-      await axiosInstance.delete(`/api/v1/trainings/${id}/`);
+      const response = await axiosInstance.delete(`/api/v1/trainings/${id}/`);
       fetchTrainings();
+      ToastMessage("Training", response.status || 500);
     } catch (error) {
-      console.error("Error deleting training:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Training", err.response?.status || 500);
     }
   };
 
