@@ -45,6 +45,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import SortableItem from "./SortableItem";
+import { AxiosError } from "axios";
+import { ToastMessage } from "@/utils/ToastMessage";
 
 
 interface EducationFormData {
@@ -291,7 +293,14 @@ export default function Education() {
       const response = await axiosInstance.get<Education[]>("/api/v1/educations/");
       setEducations(response.data);
     } catch (error) {
-      console.error("Error fetching education:", error);
+      const err = error as AxiosError;
+      if (err.response?.status === 404) {
+        setEducations([]);
+        ToastMessage("Education", err.response?.status || 500);
+      } else {
+        console.error(err);
+        ToastMessage("Education", err.response?.status || 500);
+      }
     }
   };
 
@@ -300,7 +309,8 @@ export default function Education() {
       const response = await axiosInstance.get<Degree[]>("/api/v1/degrees/");
       setDegrees(response.data);
     } catch (error) {
-      console.error("Error fetching degrees", error);
+      const err = error as AxiosError;
+      ToastMessage("Degrees", err.response?.status || 500);
     }
   };
 
@@ -309,7 +319,8 @@ export default function Education() {
       const response = await axiosInstance.get<Department[]>("/api/v1/departments/");
       setDepartments(response.data);
     } catch (error) {
-      console.error("Error fetching departments", error);
+      const err = error as AxiosError;
+      ToastMessage("Departments", err.response?.status || 500);
     }
   };
 
@@ -318,7 +329,8 @@ export default function Education() {
       const response = await axiosInstance.get<University[]>("/api/v1/universities/");
       setUniversities(response.data);
     } catch (error) {
-      console.error("Error fetching universities", error);
+      const err = error as AxiosError;
+      ToastMessage("Universities", err.response?.status || 500);
     }
   };
 
@@ -331,23 +343,29 @@ export default function Education() {
 
   const handleEducation = async (data: EducationFormData, id?: number) => {
     try {
-      if (id) {
-        await axiosInstance.put(`/api/v1/educations/${id}/`, data);
-      } else {
-        await axiosInstance.post("/api/v1/educations/", data);
-      }
+      const response = id
+        ? await axiosInstance.put(`/api/v1/educations/${id}/`, data)
+        : await axiosInstance.post("/api/v1/educations/", data);
+
       fetchEducation();
+      ToastMessage("Education", response.status || 500);
     } catch (error) {
-      console.error("Error saving education", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Education", err.response?.status || 500);
     }
   };
 
+
   const deleteEducation = async (id: number) => {
     try {
-      await axiosInstance.delete(`/api/v1/educations/${id}/`);
+      const response = await axiosInstance.delete(`/api/v1/educations/${id}/`);
       fetchEducation();
+      ToastMessage("Education", response.status || 500);
     } catch (error) {
-      console.error("Error deleting education", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Education", err.response?.status || 500);
     }
   };
 

@@ -34,6 +34,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import SortableItem from "./SortableItem";
+import { AxiosError } from "axios";
+import { ToastMessage } from "@/utils/ToastMessage";
 
 
 interface ExperienceFormData {
@@ -139,7 +141,14 @@ export default function Experience() {
       const response = await axiosInstance.get<Experience[]>("/api/v1/experiences/");
       setExperiences(response.data);
     } catch (error) {
-      console.error("Error fetching experiences:", error);
+      const err = error as AxiosError;
+      if (err.response?.status === 404) {
+        setExperiences([]);
+        ToastMessage("Experience", err.response?.status || 500);
+      } else {
+        console.error(err);
+        ToastMessage("Experience", err.response?.status || 500);
+      }
     }
   };
 
@@ -149,23 +158,29 @@ export default function Experience() {
 
   const handleExperience = async (data: ExperienceFormData, id?: number) => {
     try {
-      if (id) {
-        await axiosInstance.put(`/api/v1/experiences/${id}/`, data);
-      } else {
-        await axiosInstance.post("/api/v1/experiences/", data);
-      }
+      const response = id
+        ? await axiosInstance.put(`/api/v1/experiences/${id}/`, data)
+        : await axiosInstance.post("/api/v1/experiences/", data);
+
       fetchExperiences();
+      ToastMessage("Experience", response.status || 500);
     } catch (error) {
-      console.error("Error saving experience:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Experience", err.response?.status || 500);
     }
   };
 
+
   const deleteExperience = async (id: number) => {
     try {
-      await axiosInstance.delete(`/api/v1/experiences/${id}/`);
+      const response = await axiosInstance.delete(`/api/v1/experiences/${id}/`);
       fetchExperiences();
+      ToastMessage("Experience", response.status || 500);
     } catch (error) {
-      console.error("Error deleting experience:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Experience", err.response?.status || 500);
     }
   };
 

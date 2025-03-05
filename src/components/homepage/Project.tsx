@@ -42,6 +42,8 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import SortableItem from "./SortableItem";
+import { AxiosError } from "axios";
+import { ToastMessage } from "@/utils/ToastMessage";
 
 
 interface ProjectFormData {
@@ -211,7 +213,14 @@ export default function Project() {
       const response = await axiosInstance.get<Project[]>("/api/v1/projects/");
       setProjects(response.data);
     } catch (error) {
-      console.error("Error fetching projects:", error);
+      const err = error as AxiosError;
+      if (err.response?.status === 404) {
+        setProjects([]);
+        ToastMessage("Project", err.response?.status || 500);
+      } else {
+        console.error(err);
+        ToastMessage("Project", err.response?.status || 500);
+      }
     }
   };
 
@@ -220,7 +229,8 @@ export default function Project() {
       const response = await axiosInstance.get<Specailized[]>("/api/v1/specialized-cvs/");
       setSpecailized(response.data);
     } catch (error) {
-      console.error("Error fetching Specailized skills", error);
+      const err = error as AxiosError;
+      ToastMessage("Specailized", err.response?.status || 500);
     }
   };
 
@@ -232,23 +242,29 @@ export default function Project() {
 
   const handleProject = async (data: ProjectFormData, id?: number) => {
     try {
-      if (id) {
-        await axiosInstance.put(`/api/v1/projects/${id}/`, data);
-      } else {
-        await axiosInstance.post("/api/v1/projects/", data);
-      }
+      const response = id
+        ? await axiosInstance.put(`/api/v1/projects/${id}/`, data)
+        : await axiosInstance.post("/api/v1/projects/", data);
+
       fetchProjects();
+      ToastMessage("Project", response.status || 500);
     } catch (error) {
-      console.error("Error saving project:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Project", err.response?.status || 500);
     }
   };
 
+
   const deleteProject = async (id: number) => {
     try {
-      await axiosInstance.delete(`/api/v1/projects/${id}/`);
+      const response = await axiosInstance.delete(`/api/v1/projects/${id}/`);
       fetchProjects();
+      ToastMessage("Project", response.status || 500);
     } catch (error) {
-      console.error("Error deleting project:", error);
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Project", err.response?.status || 500);
     }
   };
 

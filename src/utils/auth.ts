@@ -1,4 +1,5 @@
 import {axiosInstance1} from "@/axios";
+import { toast } from "sonner";
 
 export const updateToken = async () => {
   
@@ -63,7 +64,9 @@ export const logoutUser = async () => {
   // Redirect to home page after a short delay
   setTimeout(() => {
     window.location.href = "/"; // Redirect after delay
+    toast.success("Logged out successfully");
   }, 500);
+
 };
 
 // Function to check if the user is authenticated

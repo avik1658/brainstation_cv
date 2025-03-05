@@ -25,6 +25,9 @@ import {
     SelectItem,
     SelectGroup
 } from "@/components/ui/select"; 
+import { AxiosError } from "axios";
+import { ToastMessage } from "@/utils/ToastMessage";
+import { toast } from "sonner";
 
 interface DropdownProps {
     label: string;
@@ -159,8 +162,11 @@ export default function Navbar() {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        } catch (error) {
-            console.error("Error downloading CV:", error);
+            toast.success("CV Downloaded Successfully");
+            } catch (error) {
+                const err = error as AxiosError;
+                console.error(err);
+                ToastMessage("CV", err.response?.status || 500);
         }
     };
 

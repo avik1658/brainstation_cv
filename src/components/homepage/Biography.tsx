@@ -28,6 +28,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
+import { AxiosError } from "axios";
+import { ToastMessage } from "@/utils/ToastMessage";
 
 
 interface Profile {
@@ -283,7 +285,8 @@ export default function Biography() {
       const response = await axiosInstance.get<Profile>("/api/v1/employees/");
       setProfile(response.data);
     } catch (error) {
-      console.error("Error fetching employee data:", error);
+      const err = error as AxiosError;
+      ToastMessage("Employee", err.response?.status || 500);
     }
   };
 
@@ -294,7 +297,8 @@ export default function Biography() {
         setProfilePicture(response.data.profile_picture);
       }
     } catch (error) {
-      console.error("Error fetching profile picture:", error);
+      const err = error as AxiosError;
+      ToastMessage("Profile Pic", err.response?.status || 500);
     }
   };
 
@@ -303,7 +307,8 @@ export default function Biography() {
       const response = await axiosInstance.get<Designation[]>(`/api/v1/designations/`);
       setDesignation(response.data);
     } catch (error) {
-      console.error("Error fetching designation:", error);
+      const err = error as AxiosError;
+      ToastMessage("Designation", err.response?.status || 500);
     }
   };
 
@@ -312,7 +317,8 @@ export default function Biography() {
       const response = await axiosInstance.get<Sbu[]>(`/api/v1/sbu-projects/`);
       setSbu(response.data);
     } catch (error) {
-      console.error("Error fetching sbu:", error);
+      const err = error as AxiosError;
+      ToastMessage("Sbu", err.response?.status || 500);
     }
   };
 
@@ -351,14 +357,22 @@ export default function Biography() {
       });
       setProfilePicture(response.data.profile_picture);
       setIsProfilePicModalOpen(false);
+      ToastMessage("Profile Pic", response.status || 500);
     } catch (error) {
-      console.error("Error updating profile picture:", error);
+      const err = error as AxiosError;
+      ToastMessage("Profile Pic", err.response?.status || 500);
     }
   };
-
+  
   const updateProfile = async (data: Profile) => {
-    await axiosInstance.patch("/api/v1/employees/", data);
-    await fetchEmployee();
+    try{
+      const response = await axiosInstance.patch("/api/v1/employees/", data);
+      fetchEmployee();
+      ToastMessage("Profile", response.status || 500);
+    } catch (error) {
+      const err = error as AxiosError;
+      ToastMessage("Profile", err.response?.status || 500);
+    }
   };
 
   return (
@@ -377,8 +391,8 @@ export default function Biography() {
         {profile ? (
           <>
             <h1 className="text-2xl text-center font-bold mt-4 text-gray-900">{profile.name}</h1>
-            <p className="text-base font-normal">Designation : <span className="text-base font-normal text-gray-700 mr-2">{getDesignationName(profile.designation)}</span></p>
-            <p className="text-base font-normal">SBU : <span className="text-base font-normal text-gray-700 mr-2">{getSbuName(profile.sub_project)}</span></p>
+            <p className="text-base text-center font-normal">Designation : <span className="text-base font-normal text-gray-700 mr-2">{getDesignationName(profile.designation)}</span></p>
+            <p className="text-base text-center font-normal">SBU : <span className="text-base font-normal text-gray-700 mr-2">{getSbuName(profile.sub_project)}</span></p>
             <div className="flex flex-wrap flex-row justify-center gap-2 mt-2">
               {profile.tags.map((tag,index)=>{
                 return <span key={index} className="text-white text-base text-center font-normal bg-sky-500 rounded-xl px-2">{tag}</span>
