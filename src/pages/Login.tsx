@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {useAxios} from "@/axios";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import  { AxiosError } from 'axios';
+import { toast } from "sonner";
 
 
 const formSchema = z.object({
@@ -26,7 +26,6 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function Login() {
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const navigate = useNavigate();
   const axiosInstance = useAxios();
 
@@ -37,10 +36,6 @@ export default function Login() {
       password: "",
     },
   });
-
-  const removeErrorMsg = () => {
-    setErrorMsg(null);
-  }
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -57,16 +52,15 @@ export default function Login() {
       localStorage.setItem("localAccessToken", accessToken);
       localStorage.setItem("localRefreshToken", refreshToken);
       localStorage.setItem("role", role);
-  
+      
+      toast.success("Login successful");
       navigate("/home");
     } catch (error) {
-    const err = error as AxiosError
-      if (!err?.response) {
-          setErrorMsg("No Server Response");
-      } else if (err.response?.status === 401) {
-          setErrorMsg("Wrong Username or Password");
+    const err = error as AxiosError<{detail: string}>
+      if (err.response?.status === 401) {
+          toast.error(err?.response?.data?.detail);
       } else {
-          setErrorMsg("Login Failed");
+          toast.error(err.message);
       }  
     }
   };
@@ -87,7 +81,6 @@ export default function Login() {
                     <Input placeholder="Enter your username" {...field}
                     onChange={(e) => {
                       field.onChange(e); 
-                      removeErrorMsg();
                     }} />
                   </FormControl>
                   <FormMessage />
@@ -103,15 +96,13 @@ export default function Login() {
                   <FormControl>
                     <Input type="password" placeholder="Enter your password" {...field}
                     onChange={(e) => {
-                      field.onChange(e); 
-                      removeErrorMsg();
+                      field.onChange(e);
                     }}  />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {errorMsg && <p className="text-red-500 text-center font-semibold mb-4">{errorMsg}</p>}
             <Button type="submit" className="w-full">Submit</Button>
           </form>
         </Form>

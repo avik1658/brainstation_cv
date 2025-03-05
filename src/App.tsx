@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import { getUserRole,isAuthenticated } from './utils/auth';
 import Admin from './pages/Admin';
 import AdminEdit from './pages/AdminEdit';
+import { Toaster } from './components/ui/sonner';
 
 function PrivateRoute({ children, allowedRoles }: { children: JSX.Element, allowedRoles: string[] }) {
   if (!isAuthenticated()) {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/admin" element={<PrivateRoute allowedRoles={["admin"]}><Admin /></PrivateRoute>} />
         <Route path="/admin-edit" element={<PrivateRoute allowedRoles={["admin"]}><AdminEdit /></PrivateRoute>} />
       </Routes>
+      <Toaster richColors visibleToasts={3} toastOptions={{ duration: 1000 }} />
     </>
   );
 }
