@@ -51,7 +51,7 @@ interface SkillFormData {
   specialized_cv : number | null;
 }
 
-interface Specailized {
+interface Specialized {
   id: number;
   name: string;
 }
@@ -64,9 +64,9 @@ interface SkillModalProps {
   modalType: string;
   skillData?: Skill | null;
   handleSkill: (data: SkillFormData, id?: number) => void;
-  getSpecailizedName: (id:number) => string;
+  getSpecializedName: (id:number) => string;
   closeModal: () => void;
-  specailized: Specailized[];
+  specialized: Specialized[];
 }
 
 const formSchema = z.object({
@@ -76,7 +76,7 @@ const formSchema = z.object({
   specialized_cv: z.union([z.number(), z.null()]),
 });
 
-function SkillModal({ modalType, skillData, handleSkill, getSpecailizedName, closeModal, specailized}: SkillModalProps) {
+function SkillModal({ modalType, skillData, handleSkill, getSpecializedName, closeModal, specialized}: SkillModalProps) {
   const {
     register,
     handleSubmit,
@@ -133,14 +133,14 @@ function SkillModal({ modalType, skillData, handleSkill, getSpecailizedName, clo
                 <SelectValue
                   placeholder={
                     skillData?.specialized_cv != null 
-                      ? getSpecailizedName(skillData.specialized_cv) 
+                      ? getSpecializedName(skillData.specialized_cv) 
                       : "Select specialization"
                   }
                 />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="null">Default</SelectItem>
-                {specailized.map((element) => (
+                {specialized.map((element) => (
                   <SelectItem key={element.id} value={String(element.id)}>
                     {element.name}
                   </SelectItem>
@@ -166,7 +166,7 @@ export default function Skill() {
   const [modalType, setModalType] = useState<string>("");
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [specailized, setSpecailized] = useState<Specailized[]>([]);
+  const [specialized, setSpecialized] = useState<Specialized[]>([]);
   const axiosInstance = useAxios();
 
   const fetchSkills = async () => {
@@ -187,8 +187,8 @@ export default function Skill() {
 
   const fetchSpecailized = async () => {
     try {
-      const response = await axiosInstance.get<Specailized[]>("/api/v1/specialized-cvs/");
-      setSpecailized(response.data);
+      const response = await axiosInstance.get<Specialized[]>("/api/v1/specialized-cvs/");
+      setSpecialized(response.data);
     } catch (error) {
       const err = error as AxiosError;
       ToastMessage("Specailized", err.response?.status || 500);
@@ -227,8 +227,8 @@ export default function Skill() {
     }
   };
 
-  const getSpecailizedName = (id: number): string => {
-    return specailized.find(specailized => specailized.id === id)?.name || "Unknown";
+  const getSpecializedName = (id: number): string => {
+    return specialized.find(specialized => specialized.id === id)?.name || "Unknown";
   };
 
 
@@ -284,8 +284,8 @@ export default function Skill() {
             skillData={selectedSkill}
             handleSkill={handleSkill}
             closeModal={() => setIsModalOpen(false)}
-            getSpecailizedName={getSpecailizedName}
-            specailized={specailized}
+            getSpecializedName={getSpecializedName}
+            specialized={specialized}
           />
         </Dialog>
       </div>
@@ -325,7 +325,7 @@ export default function Skill() {
                     </div>
                   </div>
                   {skill.specialized_cv !== null ?
-                      <p><span className="text-base text-white font-normal bg-blue-600 rounded-lg px-2" >{getSpecailizedName(skill.specialized_cv)}</span></p> : 
+                      <p><span className="text-base text-white font-normal bg-blue-600 rounded-lg px-2" >{getSpecializedName(skill.specialized_cv)}</span></p> : 
                       <p><span className="text-base text-white font-normal bg-green-600 rounded-lg px-2" >Default</span></p>
                   }
                   <div className="w-full bg-gray-300 h-4 rounded-full mt-2">

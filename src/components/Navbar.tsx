@@ -3,6 +3,9 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -36,7 +39,7 @@ interface DropdownProps {
     setSelected: (value: string | number) => void;  
 }
 
-interface Specailized {
+interface Specialized {
   id: number;
   name: string;
 }
@@ -124,12 +127,12 @@ export default function Navbar() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const axiosInstance = useAxios();
     const userType = localStorage.getItem("role");
-    const [specailized, setSpecailized] = useState<Specailized[]>([]);
+    const [specialized, setSpecialized] = useState<Specialized[]>([]);
 
     const fetchSpecailized = async () => {
         try {
-        const response = await axiosInstance.get<Specailized[]>("/api/v1/specialized-cvs/");
-        setSpecailized(response.data);
+        const response = await axiosInstance.get<Specialized[]>("/api/v1/specialized-cvs/");
+        setSpecialized(response.data);
         } catch (error) {
         console.error("Error fetching Specailized skills", error);
         }
@@ -206,11 +209,22 @@ export default function Navbar() {
                                 <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={()=> downloadCV()}>
                                     Download Default
                                 </DropdownMenuItem>
-                                {specailized.map((item) => (
-                                    <DropdownMenuItem key={item.id} className="hover:bg-gray-100 px-4 py-2" onClick={() => downloadCV(item.id)}>
-                                        Download {item.name}
-                                    </DropdownMenuItem>
-                                ))}
+
+                                {specialized.length>0 &&
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger className="px-4 py-2">
+                                            Download Specialized
+                                        </DropdownMenuSubTrigger>
+                                        <DropdownMenuSubContent>
+                                            {specialized.map((item) => (
+                                                <DropdownMenuItem key={item.id} onClick={() => downloadCV(item.id)}>
+                                                    {item.name}
+                                                </DropdownMenuItem>
+                                            ))}
+                                        </DropdownMenuSubContent>
+                                    </DropdownMenuSub>
+                                }
+
                                 <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => setIsDialogOpen(true)}>
                                     Download Custom
                                 </DropdownMenuItem>

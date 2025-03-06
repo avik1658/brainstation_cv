@@ -57,7 +57,7 @@ interface ProjectFormData {
   specialized_cv : number | null;
 }
 
-interface Specailized {
+interface Specialized {
   id: number;
   name: string;
 }
@@ -71,9 +71,9 @@ interface ProjectModalProps {
   modalType: string;
   projectData?: Project | null;
   handleProject: (data: ProjectFormData, id?: number) => void;
-  getSpecailizedName: (id:number) => string;
+  getSpecializedName: (id:number) => string;
   closeModal: () => void;
-  specailized: Specailized[];
+  specialized: Specialized[];
 }
 
 const formSchema = z.object({
@@ -88,7 +88,7 @@ const formSchema = z.object({
 });
 
 
-function ProjectModal({ modalType, projectData, handleProject,getSpecailizedName, closeModal,specailized }: ProjectModalProps) {
+function ProjectModal({ modalType, projectData, handleProject, getSpecializedName, closeModal, specialized}: ProjectModalProps) {
   const {
     register,
     handleSubmit,
@@ -151,14 +151,14 @@ function ProjectModal({ modalType, projectData, handleProject,getSpecailizedName
                   <SelectValue
                     placeholder={
                       projectData?.specialized_cv != null 
-                        ? getSpecailizedName(projectData.specialized_cv) 
+                        ? getSpecializedName(projectData.specialized_cv) 
                         : "Select specialization"
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="null">Default</SelectItem>
-                  {specailized.map((element) => (
+                  {specialized.map((element) => (
                     <SelectItem key={element.id} value={String(element.id)}>
                       {element.name}
                     </SelectItem>
@@ -205,7 +205,7 @@ export default function Project() {
   const [modalType, setModalType] = useState<string>("");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [specailized, setSpecailized] = useState<Specailized[]>([]);
+  const [specialized, setSpecialized] = useState<Specialized[]>([]);
   const axiosInstance = useAxios();
   
   const fetchProjects = async () => {
@@ -226,8 +226,8 @@ export default function Project() {
 
   const fetchSpecailized = async () => {
     try {
-      const response = await axiosInstance.get<Specailized[]>("/api/v1/specialized-cvs/");
-      setSpecailized(response.data);
+      const response = await axiosInstance.get<Specialized[]>("/api/v1/specialized-cvs/");
+      setSpecialized(response.data);
     } catch (error) {
       const err = error as AxiosError;
       ToastMessage("Specailized", err.response?.status || 500);
@@ -268,8 +268,8 @@ export default function Project() {
     }
   };
 
-  const getSpecailizedName = (id: number): string => {
-    return specailized.find(specailized => specailized.id === id)?.name || "Unknown";
+  const getSpecializedName = (id: number): string => {
+    return specialized.find(specialized => specialized.id === id)?.name || "Unknown";
   };
 
   const sensors = useSensors(
@@ -325,8 +325,8 @@ export default function Project() {
             projectData={selectedProject}
             handleProject={handleProject}
             closeModal={() => setIsModalOpen(false)}
-            getSpecailizedName={getSpecailizedName}
-            specailized={specailized}
+            getSpecializedName={getSpecializedName}
+            specialized={specialized}
           />
         </Dialog>
       </div>
@@ -363,7 +363,7 @@ export default function Project() {
                       </div>
                       
                       {project.specialized_cv !== null ?
-                          <p><span className="text-base text-white font-normal bg-blue-600 rounded-lg px-2" >{getSpecailizedName(project.specialized_cv)}</span></p> : 
+                          <p><span className="text-base text-white font-normal bg-blue-600 rounded-lg px-2" >{getSpecializedName(project.specialized_cv)}</span></p> : 
                           <p><span className="text-base text-white font-normal bg-green-600 rounded-lg px-2" >Default</span></p>
                       }
 
