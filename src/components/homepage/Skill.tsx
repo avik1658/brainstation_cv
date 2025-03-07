@@ -253,17 +253,25 @@ export default function Skill() {
         const newItems = arrayMove(items, oldIndex, newIndex);
         
         const updatedItems = newItems.map((item, index) => ({
-          ...item,
+          id : item.id,
           priority: index + 1
         }));
 
-        console.log(updatedItems)
-
-        Promise.all(
-          newItems.map((item, index) =>
-            axiosInstance.put(`/api/v1/technical-skills/${item.id}/`, { ...item, priority: index + 1 })
-          )
-        ).then(fetchSkills);
+        axiosInstance
+          .patch(`/api/v1/priority/`, {
+            object: "TechnicalSkill",
+            data: updatedItems,
+          })
+          .then((response) => {
+            ToastMessage("Skill", response.status || 500);
+            fetchSkills();
+          })
+          .catch((error) => {
+            const err = error as AxiosError;
+            console.error(err);
+            ToastMessage("Skill", err.response?.status || 500);
+            fetchSkills();
+          });
 
         return newItems;
       });

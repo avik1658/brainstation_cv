@@ -8,7 +8,7 @@ const useAxios = () => {
 };
 
 const url = "http://172.16.230.59:8080";
-const normalTimeout = 1000;
+const normalTimeout = 5000;
 const pdfTimeout = 10000;
 const excelTimeout = 10000;
 

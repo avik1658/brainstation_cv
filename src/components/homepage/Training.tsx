@@ -183,11 +183,26 @@ const sensors = useSensors(
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
 
-        Promise.all(
-          newItems.map((item, index) =>
-            axiosInstance.put(`/api/v1/trainings/${item.id}/`, { ...item, priority: index + 1 })
-          )
-        ).then(fetchTrainings);
+        const updatedItems = newItems.map((item, index) => ({
+          id : item.id,
+          priority: index + 1
+        }));
+
+        axiosInstance
+          .patch(`/api/v1/priority/`, {
+            object: "Trainings",
+            data: updatedItems,
+          })
+          .then((response) => {
+            ToastMessage("Training", response.status || 500);
+            fetchTrainings();
+          })
+          .catch((error) => {
+            const err = error as AxiosError;
+            console.error(err);
+            ToastMessage("Training", err.response?.status || 500);
+            fetchTrainings();
+          });
 
         return newItems;
       });

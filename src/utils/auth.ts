@@ -1,4 +1,5 @@
 import {axiosInstance1} from "@/axios";
+import { AxiosError } from "axios";
 import { toast } from "sonner";
 
 export const updateToken = async () => {
@@ -51,9 +52,10 @@ export const logoutUser = async () => {
         refresh: refreshToken,
       });
     }
-  } catch (error) {
-    console.error("Failed to logout", error);
-    throw error;
+    } catch (error) {
+      const err = error as AxiosError;
+      console.error(err);
+      toast.error(`Failed to Logout`);
   }
   
   localStorage.removeItem("localAccessToken");

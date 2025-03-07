@@ -181,11 +181,26 @@ export default function Achievement() {
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
 
-        Promise.all(
-          newItems.map((item, index) =>
-            axiosInstance.put(`/api/v1/achievements/${item.id}/`, { ...item, priority: index + 1 })
-          )
-        ).then(fetchAchievements);
+        const updatedItems = newItems.map((item, index) => ({
+          id : item.id,
+          priority: index + 1
+        }));
+
+        axiosInstance
+          .patch(`/api/v1/priority/`, {
+            object: "Achievement",
+            data: updatedItems,
+          })
+          .then((response) => {
+            ToastMessage("Achievement", response.status || 500);
+            fetchAchievements();
+          })
+          .catch((error) => {
+            const err = error as AxiosError;
+            console.error(err);
+            ToastMessage("Achievement", err.response?.status || 500);
+            fetchAchievements();
+          });
 
         return newItems;
       });

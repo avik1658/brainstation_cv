@@ -292,11 +292,26 @@ export default function Project() {
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
 
-        Promise.all(
-          newItems.map((item, index) =>
-            axiosInstance.put(`/api/v1/projects/${item.id}/`, { ...item, priority: index + 1 })
-          )
-        ).then(fetchProjects);
+        const updatedItems = newItems.map((item, index) => ({
+          id : item.id,
+          priority: index + 1
+        }));
+
+        axiosInstance
+          .patch(`/api/v1/priority/`, {
+            object: "Project",
+            data: updatedItems,
+          })
+          .then((response) => {
+            ToastMessage("Project", response.status || 500);
+            fetchProjects();
+          })
+          .catch((error) => {
+            const err = error as AxiosError;
+            console.error(err);
+            ToastMessage("Project", err.response?.status || 500);
+            fetchProjects();
+          });
 
         return newItems;
       });

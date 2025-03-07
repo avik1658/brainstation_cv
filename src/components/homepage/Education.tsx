@@ -402,11 +402,26 @@ export default function Education() {
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
 
-        Promise.all(
-          newItems.map((item, index) =>
-            axiosInstance.put(`/api/v1/educations/${item.id}/`, { ...item, priority: index + 1 })
-          )
-        ).then(fetchEducation);
+        const updatedItems = newItems.map((item, index) => ({
+          id : item.id,
+          priority: index + 1
+        }));
+
+        axiosInstance
+          .patch(`/api/v1/priority/`, {
+            object: "Education",
+            data: updatedItems,
+          })
+          .then((response) => {
+            ToastMessage("Education", response.status || 500);
+            fetchEducation();
+          })
+          .catch((error) => {
+            const err = error as AxiosError;
+            console.error(err);
+            ToastMessage("Education", err.response?.status || 500);
+            fetchEducation();
+          });
 
         return newItems;
       });
