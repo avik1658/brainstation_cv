@@ -251,6 +251,13 @@ export default function Skill() {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
+        
+        const updatedItems = newItems.map((item, index) => ({
+          ...item,
+          priority: index + 1
+        }));
+
+        console.log(updatedItems)
 
         Promise.all(
           newItems.map((item, index) =>

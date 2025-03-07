@@ -1,4 +1,4 @@
-import {useAxios} from "@/axios";
+import {pdfTimeout, url, useAxios} from "@/axios";
 import { useState, useEffect } from "react";
 import {
   Table,
@@ -28,6 +28,8 @@ import GenerateExcelModal from "./GenerateExcelModal";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { ToastMessage } from "@/utils/ToastMessage";
+import { MdNotificationsActive } from "react-icons/md";
+
 
 interface Employee {
   id: number;
@@ -58,6 +60,7 @@ export default function Employee() {
   const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [action,setAction] = useState("CV")
   const axiosInstance = useAxios();
   const navigate = useNavigate();
 
@@ -108,7 +111,7 @@ export default function Employee() {
     try {
       const response = await axiosInstance.get(`/api/v1/generate-pdf/${id}/`, {
         responseType: "blob",
-        timeout: 10000,
+        timeout: pdfTimeout,
         headers: { Accept: "application/pdf" },
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -132,6 +135,24 @@ export default function Employee() {
     }
   };
 
+  const sendNotification = async (id: number) => {
+    try {
+      await axiosInstance.post(`/api/v1/notify-employee/`, {
+        employee_id: id
+      });
+      toast.success("Notification sent successfully")
+    } catch (error) {
+      const err = error as AxiosError;
+      console.error(err);
+      ToastMessage("Notification", err.response?.status || 500);
+    }
+  };
+
+  const sendNotificationSelected = async () => {
+    for (const emp of selectedEmployees) {
+        await sendNotification(emp.id);
+    }
+  };
 
   useEffect(() => {
     fetchDesignation();
@@ -202,9 +223,10 @@ export default function Employee() {
             <TableHead className="w-[15%]">Name</TableHead>
             <TableHead className="w-[15%]">Designation</TableHead>
             <TableHead className="w-[20%]">Update Status</TableHead>
-            <TableHead className="w-[25%] text-center">Enthusiast At</TableHead>
+            <TableHead className="w-[20%] text-center">Enthusiast At</TableHead>
             <TableHead className="w-[5%] text-center">Edit</TableHead>
             <TableHead className="w-[5%] text-center">Download</TableHead>
+            <TableHead className="w-[5%] text-center">Notify</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -219,7 +241,7 @@ export default function Employee() {
               <TableCell className="text-center">
                 <div className="flex justify-start">
                   <img
-                    src={`http://172.16.230.59:8080/${employee.profile_picture}`}
+                    src={`${url}/${employee.profile_picture}`}
                     alt="profile"
                     className="w-12 h-12 rounded-full"
                   />
@@ -249,6 +271,11 @@ export default function Employee() {
               <TableCell className="text-center">
                 <div className="flex justify-center">
                     <FaDownload className="text-green-800 hover:text-green-900 transition cursor-pointer" size={16} onClick={()=>downloadCV(employee.id,employee.bs_id)} />
+                </div>
+               </TableCell>
+              <TableCell className="text-center">
+                <div className="flex justify-center">
+                    <MdNotificationsActive className="text-orange-600 hover:text-orange-700 transition cursor-pointer" size={22} onClick={()=>sendNotification(employee.id)} />
                 </div>
                </TableCell>
             </TableRow>
@@ -285,12 +312,35 @@ export default function Employee() {
             </Button>
        </div>
 
-
+      
       <div className="flex justify-center mt-4 gap-3">
-        <Button onClick={downloadSelectedCVs} disabled={!selectedEmployees.length} className="bg-sky-600 hover:bg-sky-700 transition">
-            Download Selected CVs
+        <Select onValueChange={(value) => setAction(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder={action}/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Actions</SelectLabel>
+              <SelectItem value="CV">CV</SelectItem>
+              <SelectItem value="Notification">Notification</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Button
+          onClick={() => {
+            if (action === "CV") {
+              downloadSelectedCVs();
+            } else if (action === "Notification") {
+              sendNotificationSelected();
+            }
+          }}
+          disabled={!selectedEmployees.length}
+          className="bg-sky-600 hover:bg-sky-700 transition"
+        >
+          Action
         </Button>
-      </div>
+      </div>;
     </div>
   );
 }

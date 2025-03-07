@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle,DialogDescription } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useAxios } from "@/axios";
+import { excelTimeout, useAxios } from "@/axios";
 import  { AxiosError } from 'axios';
 import { toast } from "sonner";
 import { ToastMessage } from "@/utils/ToastMessage";
@@ -64,7 +64,7 @@ export default function GenerateExcelModal({ isOpen, onClose, selectedIds }: Gen
 
       const response = await axiosInstance.get(`/api/v1/generate-excel/?${params.toString()}`, {
         responseType: "blob",
-        timeout: 10000,
+        timeout: excelTimeout,
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));

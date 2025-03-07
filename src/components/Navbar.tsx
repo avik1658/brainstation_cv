@@ -19,7 +19,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { logoutUser } from "@/utils/auth";
-import {useAxios} from "@/axios";
+import {pdfTimeout, useAxios} from "@/axios";
 import {
     Select,
     SelectTrigger,
@@ -152,7 +152,7 @@ export default function Navbar() {
 
             const response = await axiosInstance.get(tempUrl, {
                 responseType: "blob",
-                timeout: 10000,
+                timeout: pdfTimeout,
                 headers: {
                     'Accept': 'application/pdf',
                 }

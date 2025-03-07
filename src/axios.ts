@@ -7,15 +7,19 @@ const useAxios = () => {
   return location.pathname.startsWith("/admin-edit") ? axiosInstance2 : axiosInstance1;
 };
 
+const url = "http://172.16.230.59:8080";
+const normalTimeout = 1000;
+const pdfTimeout = 10000;
+const excelTimeout = 10000;
 
 const axiosInstance1 = axios.create({
-  baseURL: "http://172.16.230.59:8080",
-  timeout: 1000,
+  baseURL: url,
+  timeout: normalTimeout,
 });
 
 const axiosInstance2 = axios.create({
-  baseURL: "http://172.16.230.59:8080",
-  timeout: 1000,
+  baseURL: url,
+  timeout: normalTimeout,
 });
 
 // Static variables for token refresh management
@@ -116,4 +120,4 @@ axiosInstance1.interceptors.response.use(
   }
 );
 
-export {useAxios,axiosInstance1,axiosInstance2};
+export {useAxios,axiosInstance1,axiosInstance2,url,pdfTimeout,excelTimeout};

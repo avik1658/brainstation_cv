@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import {useAxios}  from "@/axios";
+import { url, useAxios}  from "@/axios";
 import { FaEdit } from "react-icons/fa";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -381,7 +381,7 @@ export default function Biography() {
         <Dialog open={isProfilePicModalOpen} onOpenChange={setIsProfilePicModalOpen}>
           <DialogTrigger asChild>
             <img
-              src={`http://172.16.230.59:8080/${profilePicture}`}
+              src={`${url}/${profilePicture}`}
               alt="profile"
               className="w-32 h-32 rounded-full border-4 border-blue-500 shadow-md cursor-pointer hover:brightness-50 transition"
             />
