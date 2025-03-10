@@ -36,6 +36,7 @@ import {
 import SortableItem from "./SortableItem";
 import { AxiosError } from "axios";
 import { ToastMessage } from "@/utils/ToastMessage";
+import { toast } from "sonner";
 
 
 interface TrainingFormData {
@@ -179,6 +180,7 @@ const sensors = useSensors(
 
     if (over && active.id !== over.id) {
       setTrainings((items) => {
+        const oldItems = items;
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
@@ -188,26 +190,40 @@ const sensors = useSensors(
           priority: index + 1
         }));
 
-        axiosInstance
-          .patch(`/api/v1/priority/`, {
-            object: "Trainings",
-            data: updatedItems,
-          })
-          .then((response) => {
+        const isSlowNetwork = (navigator.connection && 'effectiveType' in navigator.connection)
+          ? navigator.connection.effectiveType === '2g' || navigator.connection.effectiveType === '3g'
+          : false;
+
+        let toastId: number | string;
+        if (isSlowNetwork) {
+          toastId = toast.loading("Updating training, please don't move items...");
+        }
+
+        const updatePriority = async() => {
+          try {
+            const response = await axiosInstance.patch(`/api/v1/priority/`, {
+              object: "Trainings",
+              data: updatedItems,
+            });
+            await fetchTrainings();
+            toast.dismiss(toastId);
             ToastMessage("Training", response.status || 500);
-            fetchTrainings();
-          })
-          .catch((error) => {
+          } catch (error) {
+            toast.dismiss(toastId);
             const err = error as AxiosError;
             console.error(err);
             ToastMessage("Training", err.response?.status || 500);
-            fetchTrainings();
-          });
+            setTrainings(oldItems);
+          }
+        }
 
+        updatePriority();
+        
         return newItems;
       });
     }
   };
+
 
   return (
     <div className="bg-gray-100 rounded-2xl w-full max-w-4xl mx-auto">

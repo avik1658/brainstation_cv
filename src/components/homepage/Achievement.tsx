@@ -36,6 +36,7 @@ import {
 import SortableItem from "./SortableItem";
 import { AxiosError } from "axios";
 import { ToastMessage } from "@/utils/ToastMessage";
+import { toast } from "sonner";
 
 interface AchievementFormData {
   name: string;
@@ -177,6 +178,7 @@ export default function Achievement() {
 
     if (over && active.id !== over.id) {
       setAchievements((items) => {
+        const oldItems = items;
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
@@ -186,26 +188,40 @@ export default function Achievement() {
           priority: index + 1
         }));
 
-        axiosInstance
-          .patch(`/api/v1/priority/`, {
-            object: "Achievement",
-            data: updatedItems,
-          })
-          .then((response) => {
+        const isSlowNetwork = (navigator.connection && 'effectiveType' in navigator.connection)
+          ? navigator.connection.effectiveType === '2g' || navigator.connection.effectiveType === '3g'
+          : false;
+
+        let toastId: number | string;
+        if (isSlowNetwork) {
+          toastId = toast.loading("Updating achievement, please don't move items...");
+        }
+
+        const updatePriority = async() => {
+          try {
+            const response = await axiosInstance.patch(`/api/v1/priority/`, {
+              object: "Achievement",
+              data: updatedItems,
+            });
+            await fetchAchievements();
+            toast.dismiss(toastId);
             ToastMessage("Achievement", response.status || 500);
-            fetchAchievements();
-          })
-          .catch((error) => {
+          } catch (error) {
+            toast.dismiss(toastId);
             const err = error as AxiosError;
             console.error(err);
             ToastMessage("Achievement", err.response?.status || 500);
-            fetchAchievements();
-          });
+            setAchievements(oldItems);
+          }
+        }
 
+        updatePriority();
+        
         return newItems;
       });
     }
   };
+
 
   return (
     <div className="bg-gray-100 rounded-2xl w-full max-w-4xl mx-auto">

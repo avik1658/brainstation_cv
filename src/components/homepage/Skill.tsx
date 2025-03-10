@@ -43,6 +43,7 @@ import {
 import SortableItem from "./SortableItem";
 import { AxiosError } from "axios";
 import { ToastMessage } from "@/utils/ToastMessage";
+import { toast } from "sonner";
 
 interface SkillFormData {
   skill: string;
@@ -248,6 +249,7 @@ export default function Skill() {
 
     if (over && active.id !== over.id) {
       setSkills((items) => {
+        const oldItems = items;
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
@@ -257,22 +259,35 @@ export default function Skill() {
           priority: index + 1
         }));
 
-        axiosInstance
-          .patch(`/api/v1/priority/`, {
-            object: "TechnicalSkill",
-            data: updatedItems,
-          })
-          .then((response) => {
+        const isSlowNetwork = (navigator.connection && 'effectiveType' in navigator.connection)
+          ? navigator.connection.effectiveType === '2g' || navigator.connection.effectiveType === '3g'
+          : false;
+
+        let toastId: number | string;
+        if (isSlowNetwork) {
+          toastId = toast.loading("Updating skill, please don't move items...");
+        }
+
+        const updatePriority = async() => {
+          try {
+            const response = await axiosInstance.patch(`/api/v1/priority/`, {
+              object: "TechnicalSkill",
+              data: updatedItems,
+            });
+            await fetchSkills();
+            toast.dismiss(toastId);
             ToastMessage("Skill", response.status || 500);
-            fetchSkills();
-          })
-          .catch((error) => {
+          } catch (error) {
+            toast.dismiss(toastId);
             const err = error as AxiosError;
             console.error(err);
             ToastMessage("Skill", err.response?.status || 500);
-            fetchSkills();
-          });
+            setSkills(oldItems);
+          }
+        }
 
+        updatePriority();
+        
         return newItems;
       });
     }

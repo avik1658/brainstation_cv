@@ -44,6 +44,7 @@ import {
 import SortableItem from "./SortableItem";
 import { AxiosError } from "axios";
 import { ToastMessage } from "@/utils/ToastMessage";
+import { toast } from "sonner";
 
 
 interface ProjectFormData {
@@ -288,6 +289,7 @@ export default function Project() {
 
     if (over && active.id !== over.id) {
       setProjects((items) => {
+        const oldItems = items;
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
@@ -297,22 +299,35 @@ export default function Project() {
           priority: index + 1
         }));
 
-        axiosInstance
-          .patch(`/api/v1/priority/`, {
-            object: "Project",
-            data: updatedItems,
-          })
-          .then((response) => {
+        const isSlowNetwork = (navigator.connection && 'effectiveType' in navigator.connection)
+          ? navigator.connection.effectiveType === '2g' || navigator.connection.effectiveType === '3g'
+          : false;
+
+        let toastId: number | string;
+        if (isSlowNetwork) {
+          toastId = toast.loading("Updating project, please don't move items...");
+        }
+
+        const updatePriority = async() => {
+          try {
+            const response = await axiosInstance.patch(`/api/v1/priority/`, {
+              object: "Project",
+              data: updatedItems,
+            });
+            await fetchProjects();
+            toast.dismiss(toastId);
             ToastMessage("Project", response.status || 500);
-            fetchProjects();
-          })
-          .catch((error) => {
+          } catch (error) {
+            toast.dismiss(toastId);
             const err = error as AxiosError;
             console.error(err);
             ToastMessage("Project", err.response?.status || 500);
-            fetchProjects();
-          });
+            setProjects(oldItems);
+          }
+        }
 
+        updatePriority();
+        
         return newItems;
       });
     }
