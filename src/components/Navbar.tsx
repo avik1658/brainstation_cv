@@ -142,12 +142,21 @@ export default function Navbar() {
         fetchSpecailized();
     }, []);
     
-    const downloadCV = async (id?:number) => {
+    const downloadCV = async (id?: number, name?: number) => {
         console.log("Downloading CV");
         try {
             let tempUrl = "/api/v1/generate-pdf/";
+
+            const params = new URLSearchParams();
             if (id !== undefined) {
-                tempUrl += `?specialized_cv=${id}`;
+                params.append("specialized_cv", id.toString());
+            }
+            if (name !== undefined) {
+                params.append("name", name.toString());
+            }
+
+            if (params.toString()) {
+                tempUrl += `?${params.toString()}`;
             }
 
             const response = await axiosInstance.get(tempUrl, {
@@ -166,10 +175,10 @@ export default function Navbar() {
             link.click();
             document.body.removeChild(link);
             toast.success("CV Downloaded Successfully");
-            } catch (error) {
-                const err = error as AxiosError;
-                console.error(err);
-                ToastMessage("CV", err.response?.status || 500);
+        } catch (error) {
+            const err = error as AxiosError;
+            console.error(err);
+            ToastMessage("CV", err.response?.status || 500);
         }
     };
 
@@ -200,10 +209,10 @@ export default function Navbar() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="bg-white shadow-lg rounded-lg mt-2 w-48 text-gray-800">
-                                <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">
+                                <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => downloadCV(undefined, 32)}>
                                     Download 3:2
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2">
+                                <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={() => downloadCV(undefined, 23)}>
                                     Download 2:3
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="hover:bg-gray-100 px-4 py-2" onClick={()=> downloadCV()}>
