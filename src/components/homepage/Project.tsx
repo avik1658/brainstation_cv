@@ -45,6 +45,7 @@ import SortableItem from "./SortableItem";
 import { AxiosError } from "axios";
 import { ToastMessage } from "@/utils/ToastMessage";
 import { toast } from "sonner";
+import {restrictToParentElement}from '@dnd-kit/modifiers';
 
 
 interface ProjectFormData {
@@ -360,7 +361,7 @@ export default function Project() {
           />
         </Dialog>
       </div>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
         <SortableContext items={projects} strategy={rectSortingStrategy}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {projects.map((project: Project) => (

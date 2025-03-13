@@ -44,6 +44,7 @@ import SortableItem from "./SortableItem";
 import { AxiosError } from "axios";
 import { ToastMessage } from "@/utils/ToastMessage";
 import { toast } from "sonner";
+import {restrictToParentElement}from '@dnd-kit/modifiers';
 
 interface SkillFormData {
   skill: string;
@@ -320,7 +321,7 @@ export default function Skill() {
         </Dialog>
       </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
         <SortableContext items={skills} strategy={rectSortingStrategy}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {skills.map((skill: Skill) => (

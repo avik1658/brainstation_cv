@@ -37,6 +37,7 @@ import SortableItem from "./SortableItem";
 import { AxiosError } from "axios";
 import { ToastMessage } from "@/utils/ToastMessage";
 import { toast } from "sonner";
+import {restrictToParentElement}from '@dnd-kit/modifiers';
 
 interface AchievementFormData {
   name: string;
@@ -247,7 +248,7 @@ export default function Achievement() {
           />
         </Dialog>
       </div>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
         <SortableContext items={achievements} strategy={verticalListSortingStrategy}>
           <ul className="list-disc text-lg text-gray-700 space-y-3">
             {achievements.map((achievement) => (

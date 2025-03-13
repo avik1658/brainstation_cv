@@ -48,6 +48,7 @@ import SortableItem from "./SortableItem";
 import { AxiosError } from "axios";
 import { ToastMessage } from "@/utils/ToastMessage";
 import { toast } from "sonner";
+import {restrictToParentElement}from '@dnd-kit/modifiers';
 
 
 interface EducationFormData {
@@ -469,7 +470,7 @@ export default function Education() {
         </Dialog>
       </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
          <SortableContext items={educations} strategy={verticalListSortingStrategy}>
           <div className="grid grid-cols-1 gap-6">
               {educations.map((edu, index) => (
