@@ -31,10 +31,12 @@ let refreshQueue: ((newToken: string) => void)[] = []; // Explicitly typed queue
 axiosInstance1.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
+    // const clientKey = "secret-client-key";
     if (token) {
       console.log(`Access logic called`);
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // config.headers['X-Client-Key'] = clientKey;
     return config;
   },
   (error) => Promise.reject(error)
@@ -49,10 +51,12 @@ axiosInstance1.defaults.headers.get['Expires'] = '0';
 axiosInstance2.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("editAccessToken");
+    // const clientKey = "secret-client-key";
     if (token) {
       console.log(`Access logic called`);
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // config.headers['X-Client-Key'] = clientKey;
     return config;
   },
   (error) => Promise.reject(error)

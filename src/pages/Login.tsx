@@ -103,7 +103,7 @@ export default function Login() {
                 </FormItem>
               )}
             />
-            <p className="text-right font-bold text-sm text-sky-600 hover:text-sky-700 hover:underline hover:cursor-pointer">Forgot Password?</p>
+            <p className="text-right"><span className="font-bold text-sm text-sky-600 hover:text-sky-700 hover:underline hover:cursor-pointer">Forgot Password?</span></p>
             <Button type="submit" className="w-full">Submit</Button>
           </form>
         </Form>
