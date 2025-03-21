@@ -23,9 +23,28 @@ In axios.ts, set up the url according to needs
 const url = "your_url";
 ```
 
-## Run the project
+## API Keys
+
+In axios.ts, set up the token in both axiosInstance1 and axiosInstance2. It is taking token from localstorage by default
+
+```
+config.headers.Authorization = `Bearer ${token}`;
+```
+
+## Run the project in development mode
 
 ```
 npm run dev
 ```
 
+
+## Generate production build
+It will create a folder named 'dist' in the project which will include all the files needed for deployment
+
+```
+npm run build
+```
+
+## Deployment
+
+Deploy the project according to the hosting service used
