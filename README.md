@@ -23,6 +23,15 @@ In axios.ts, set up the url according to needs
 const url = "your_url";
 ```
 
+## Set Up Timeouts for api calls
+In axios.ts, set up the api timeout duration according to needs
+
+```
+const normalTimeout = 5000;
+const pdfTimeout = 10000;
+const excelTimeout = 10000;
+```
+
 ## API Keys
 
 In axios.ts, set up the token in both axiosInstance1 and axiosInstance2. It is taking token from localstorage by default
